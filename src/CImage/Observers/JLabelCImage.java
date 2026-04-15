@@ -39,6 +39,7 @@ public class JLabelCImage extends JLabel implements Observer
         setIcon(new ImageIcon(cimage.getImage()));
     }
     
+    @Override
     public CImage getCImage()
     {
         return cimage;

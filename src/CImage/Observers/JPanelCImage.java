@@ -11,16 +11,16 @@ public class JPanelCImage extends javax.swing.JPanel implements Observer
     public JPanelCImage() 
     {
         initComponents();
-        jLabel.setVerticalAlignment(jLabel.TOP);
-        jLabel.setHorizontalAlignment(jLabel.LEFT);
+        jLabel.setVerticalAlignment(SwingConstants.TOP);
+        jLabel.setHorizontalAlignment(SwingConstants.LEFT);
     }
     
     public JPanelCImage(CImage ci)
     {
         initComponents();
         setCImage(ci);
-        jLabel.setVerticalAlignment(jLabel.TOP);
-        jLabel.setHorizontalAlignment(jLabel.LEFT);
+        jLabel.setVerticalAlignment(SwingConstants.TOP);
+        jLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
     }
     
@@ -61,6 +61,7 @@ public class JPanelCImage extends javax.swing.JPanel implements Observer
         jLabel.setIcon(new ImageIcon(cimage.getImage()));
     }
     
+    @Override
     public CImage getCImage()
     {
         return cimage;

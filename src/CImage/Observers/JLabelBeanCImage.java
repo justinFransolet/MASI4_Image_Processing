@@ -10,22 +10,22 @@ import javax.swing.*;
 
 public class JLabelBeanCImage extends JLabel implements Observer, MouseListener, MouseMotionListener
 {
-    public final static int INACTIF            = 0;
-    public final static int CLIC               = 1;
-    public final static int SELECT_RECT        = 2;
-    public final static int SELECT_RECT_FILL   = 3;
-    public final static int SELECT_LIGNE       = 4;
-    public final static int SELECT_CERCLE      = 5;
+    public final static int INACTIF = 0;
+    public final static int CLIC = 1;
+    public final static int SELECT_RECT = 2;
+    public final static int SELECT_RECT_FILL = 3;
+    public final static int SELECT_LIGNE = 4;
+    public final static int SELECT_CERCLE = 5;
     public final static int SELECT_CERCLE_FILL = 6;
     
     private CImage cimage;
     
-    private Vector ClicListeners;
-    private Vector SelectLigneListeners;
-    private Vector SelectRectListeners;
-    private Vector SelectRectFillListeners;
-    private Vector SelectCercleListeners;
-    private Vector SelectCercleFillListeners;
+    private final Vector<ClicListener> ClicListeners;
+    private final Vector<SelectLigneListener> SelectLigneListeners;
+    private final Vector<SelectRectListener> SelectRectListeners;
+    private final Vector<SelectRectFillListener> SelectRectFillListeners;
+    private final Vector<SelectCercleListener> SelectCercleListeners;
+    private final Vector<SelectCercleFillListener> SelectCercleFillListeners;
     
     private int x1,y1,x2,y2;
     private boolean demi;
@@ -46,12 +46,12 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         setCouleurPinceau(Color.BLACK);
         setMode(INACTIF);
         
-        ClicListeners = new Vector();
-        SelectLigneListeners = new Vector();
-        SelectRectListeners = new Vector();
-        SelectRectFillListeners = new Vector();
-        SelectCercleListeners = new Vector();
-        SelectCercleFillListeners = new Vector();
+        ClicListeners = new Vector<>();
+        SelectLigneListeners = new Vector<>();
+        SelectRectListeners = new Vector<>();
+        SelectRectFillListeners = new Vector<>();
+        SelectCercleListeners = new Vector<>();
+        SelectCercleFillListeners = new Vector<>();
         demi = false;
         
         addMouseListener(this);
@@ -70,12 +70,12 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         setMode(INACTIF);
         setCImage(ci);
         
-        ClicListeners = new Vector();
-        SelectLigneListeners = new Vector();
-        SelectRectListeners = new Vector();
-        SelectRectFillListeners = new Vector();
-        SelectCercleListeners = new Vector();
-        SelectCercleFillListeners = new Vector();
+        ClicListeners = new Vector<>();
+        SelectLigneListeners = new Vector<>();
+        SelectRectListeners = new Vector<>();
+        SelectRectFillListeners = new Vector<>();
+        SelectCercleListeners = new Vector<>();
+        SelectCercleFillListeners = new Vector<>();
         demi = false;
         
         addMouseListener(this);
@@ -95,6 +95,7 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         setIcon(new ImageIcon(cimage.getImage()));
     }
     
+    @Override
     public CImage getCImage()
     {
         return cimage;
@@ -141,7 +142,7 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         int n = ClicListeners.size();
         for (int i=0 ; i<n ; i++)
         {
-            ClicListener obj = (ClicListener)ClicListeners.elementAt(i);
+            ClicListener obj = ClicListeners.elementAt(i);
             obj.ClicDetected(e);
         }
     }
@@ -151,7 +152,7 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         int n = SelectLigneListeners.size();
         for (int i=0 ; i<n ; i++)
         {
-            SelectLigneListener obj = (SelectLigneListener)SelectLigneListeners.elementAt(i);
+            SelectLigneListener obj = SelectLigneListeners.elementAt(i);
             obj.SelectLigneDetected(e);
         }
     }
@@ -161,7 +162,7 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         int n = SelectRectListeners.size();
         for (int i=0 ; i<n ; i++)
         {
-            SelectRectListener obj = (SelectRectListener)SelectRectListeners.elementAt(i);
+            SelectRectListener obj = SelectRectListeners.elementAt(i);
             obj.SelectRectDetected(e);
         }
     }
@@ -171,7 +172,7 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         int n = SelectRectFillListeners.size();
         for (int i=0 ; i<n ; i++)
         {
-            SelectRectFillListener obj = (SelectRectFillListener)SelectRectFillListeners.elementAt(i);
+            SelectRectFillListener obj = SelectRectFillListeners.elementAt(i);
             obj.SelectRectFillDetected(e);
         }
     }
@@ -181,7 +182,7 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         int n = SelectCercleListeners.size();
         for (int i=0 ; i<n ; i++)
         {
-            SelectCercleListener obj = (SelectCercleListener)SelectCercleListeners.elementAt(i);
+            SelectCercleListener obj = SelectCercleListeners.elementAt(i);
             obj.SelectCercleDetected(e);
         }
     }
@@ -191,7 +192,7 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         int n = SelectCercleFillListeners.size();
         for (int i=0 ; i<n ; i++)
         {
-            SelectCercleFillListener obj = (SelectCercleFillListener)SelectCercleFillListeners.elementAt(i);
+            SelectCercleFillListener obj = SelectCercleFillListeners.elementAt(i);
             obj.SelectCercleFillDetected(e);
         }
     }
@@ -207,7 +208,7 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
         
         if (getMode() == SELECT_RECT || getMode() == SELECT_RECT_FILL || getMode() == SELECT_LIGNE || getMode() == SELECT_CERCLE || getMode() == SELECT_CERCLE_FILL)
         {
-            if(demi == false)
+            if(!demi)
             {
                 x1 = e.getX();
                 y1 = e.getY();
@@ -239,7 +240,7 @@ public class JLabelBeanCImage extends JLabel implements Observer, MouseListener,
     { 
         if (getMode() == SELECT_LIGNE || getMode() == SELECT_RECT || getMode() == SELECT_RECT_FILL || getMode() == SELECT_CERCLE || getMode() == SELECT_CERCLE_FILL)
         {
-            if (demi == true)
+            if (demi)
             {
                 int x = e.getX();
                 int y = e.getY();

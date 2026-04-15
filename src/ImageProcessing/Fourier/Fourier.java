@@ -4,15 +4,15 @@ import ImageProcessing.Complexe.*;
 
 public class Fourier 
 {
-    public static MatriceComplexe Fourier2D(double f[][])
+    public static MatriceComplexe Fourier2D(double[][] f)
     {
         int M = f.length;
         int N = f[0].length;
         MatriceComplexe F = new MatriceComplexe(M,N);
         
         //********** n --> v **********
-        double pr1[][] = new double[M][N];
-        double pi1[][] = new double[M][N];
+        double[][] pr1 = new double[M][N];
+        double[][] pi1 = new double[M][N];
         
         for(int m=0 ; m<M ; m++)
         {
@@ -33,8 +33,8 @@ public class Fourier
                     cosTheta = newCosTheta;
                     sinTheta = newSinTheta;
                 }
-                pr1[m][v] /= (double)N;
-                pi1[m][v] /= (double)N;
+                pr1[m][v] /= N;
+                pi1[m][v] /= N;
                 if (v > 0)
                 {
                     pr1[m][N-v] = pr1[m][v];
@@ -44,8 +44,8 @@ public class Fourier
         }
         
         //********** m --> u **********
-        double pr2[][] = new double[M][N];
-        double pi2[][] = new double[M][N];
+        double[][] pr2 = new double[M][N];
+        double[][] pi2 = new double[M][N];
         
         for(int v=0 ; v<N ; v++)
         {
@@ -66,8 +66,8 @@ public class Fourier
                     cosTheta = newCosTheta;
                     sinTheta = newSinTheta;
                 }
-                pr2[u][v] /= (double)M;
-                pi2[u][v] /= (double)M;
+                pr2[u][v] /= M;
+                pi2[u][v] /= M;
             }
         }
    
@@ -85,12 +85,12 @@ public class Fourier
         int N = F.getColonnes();
         MatriceComplexe f = new MatriceComplexe(M,N);
         
-        double pr0[][] = F.getPartieReelle();
-        double pi0[][] = F.getPartieImaginaire();
+        double[][] pr0 = F.getPartieReelle();
+        double[][] pi0 = F.getPartieImaginaire();
         
         //********** v --> n **********
-        double pr1[][] = new double[M][N];
-        double pi1[][] = new double[M][N];
+        double[][] pr1 = new double[M][N];
+        double[][] pi1 = new double[M][N];
         
         for(int u=0 ; u<M ; u++)
         {
@@ -115,8 +115,8 @@ public class Fourier
         }
         
         //********** u --> m **********
-        double pr2[][] = new double[M][N];
-        double pi2[][] = new double[M][N];
+        double[][] pr2 = new double[M][N];
+        double[][] pi2 = new double[M][N];
         
         for(int n=0 ; n<N ; n++)
         {

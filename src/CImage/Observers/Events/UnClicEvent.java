@@ -4,7 +4,8 @@ import java.util.*;
 
 public class UnClicEvent extends EventObject 
 {
-    private int x,y;
+    private final int x;
+    private final int y;
     
     /** Creates a new instance of SourisClicEvent */
     public UnClicEvent(Object source,int x,int y) 

@@ -7,12 +7,12 @@ import java.io.*;
 
 public class CImageRGB extends CImage 
 {
-    /** Cree une nouvelle instance de CImageRGB en specifiant la couleur de fond.
-     * Tous les pixels de l'image sont initialises avec la couleur c.
+    /** Cree une nouvelle instance de CImageRGB en spécifiant la couleur de fond.
+     * Tous les pixels de l'image sont initialisé avec la couleur c.
      * @param la largeur de l'image (la>0)
      * @param ha hauteur de l'image (ha>0)
      * @param c couleur d'initialisation de l'image
-     * @exception CImageRGBException Parametres d'initialisation invalides 
+     * @exception CImageRGBException Paramètres d'initialisation invalides
     */
     public CImageRGB(int la,int ha,Color c) throws CImageRGBException
     {
@@ -26,14 +26,14 @@ public class CImageRGB extends CImage
         setBackground(c);
     }
 
-    /** Cree une nouvelle instance de CImageRGB en specifiant la couleur de fond.
-     * Tous les pixels de l'image sont initialises avec la couleur (r,g,b).
+    /** Cree une nouvelle instance de CImageRGB en spécifiant la couleur de fond.
+     * Tous les pixels de l'image sont initialisé avec la couleur (r,g,b).
      * @param la largeur de l'image (la>0)
      * @param ha hauteur de l'image (ha>0)
      * @param r composante rouge [0,255] de la couleur d'initialisation de l'image
      * @param g composante verte [0,255] de la couleur d'initialisation de l'image
      * @param b composante bleue [0,255] de la couleur d'initialisation de l'image
-     * @exception CImageRGBException Parametres d'initialisation invalides 
+     * @exception CImageRGBException Paramètres d'initialisation invalides
     */
     public CImageRGB(int la,int ha,int r,int g,int b) throws CImageRGBException
     {
@@ -48,14 +48,14 @@ public class CImageRGB extends CImage
         setBackground(c);
     }
 
-    /** Cree une nouvelle instance de CImageRGB en specifiant la couleur de fond.
-     * Tous les pixels de l'image sont initialises avec la couleur (r,g,b).
+    /** Cree une nouvelle instance de CImageRGB en spécifiant la couleur de fond.
+     * Tous les pixels de l'image sont initialisé avec la couleur (r,g,b).
      * @param la largeur de l'image (la>0)
      * @param ha hauteur de l'image (ha>0)
      * @param r composante rouge [0.0,1.0] de la couleur d'initialisation de l'image
      * @param g composante verte [0.0,1.0] de la couleur d'initialisation de l'image
      * @param b composante bleue [0.0,1.0] de la couleur d'initialisation de l'image
-     * @exception CImageRGBException Parametres d'initialisation invalides 
+     * @exception CImageRGBException Paramètres d'initialisation invalides
     */
     public CImageRGB(int la,int ha,double r,double g,double b) throws CImageRGBException
     {
@@ -70,9 +70,9 @@ public class CImageRGB extends CImage
         setBackground(c);
     }
 
-    /** Cree une nouvelle instance de CImageRGB a partir des 3 matrices de composantes rouge, verte et bleue.
-     * Les 3 matrices doivent avoir la meme dimension et contenir des valeurs entieres comprises dans l'intervalle [0,255].
-     * C'est la dimension de ces matrices qui definit la dimension de la future image.
+    /** Cree une nouvelle instance de CImageRGB à partir des 3 matrices de composantes rouge, verte et bleue.
+     * Les 3 matrices doivent avoir la meme dimension et contenir des valeurs entières comprises dans l'intervalle [0,255].
+     * C'est la dimension de ces matrices qui définit la dimension de la future image.
      * @param red matrice d'initialisation de la composante rouge de l'image
      * @param green matrice d'initialisation de la composante verte de l'image
      * @param blue matrice d'initialisation de la composante bleue de l'image
@@ -80,12 +80,12 @@ public class CImageRGB extends CImage
     */
     public CImageRGB(int[][] red,int[][] green,int[][] blue) throws CImageRGBException
     {
-        // Verification des parametres
+        // Verification des paramètres
         if(red == null || green == null || blue == null) 
             throw new CImageRGBException("Matrice(s) de creation invalide(s)");
-        if(red.length != green.length || red.length != blue.length || blue.length != green.length)
+        if(red.length != green.length || red.length != blue.length)
             throw new CImageRGBException("Les matrices de creation n'ont pas la meme dimension");
-        if(red[0].length != green[0].length || red[0].length != blue[0].length || blue[0].length != green[0].length)
+        if(red[0].length != green[0].length || red[0].length != blue[0].length)
             throw new CImageRGBException("Les matrices de creation n'ont pas la meme dimension");
         
         // Construction de l'image
@@ -150,7 +150,7 @@ public class CImageRGB extends CImage
     }
     public Color getPixel(int x,int y) throws CImageRGBException
     {
-        int pixels[] = new int[1];
+        int[] pixels = new int[1];
         PixelGrabber pg = new PixelGrabber(image,x,y,1,1,pixels,0,1);
         try 
         {
@@ -165,7 +165,7 @@ public class CImageRGB extends CImage
         } 
         catch (InterruptedException ex) 
         {
-            throw new CImageRGBException("Probleme avec PixelGrabber");
+            throw new CImageRGBException("Problème avec PixelGrabber");
         }
     }
     
@@ -344,7 +344,7 @@ public class CImageRGB extends CImage
         }
         
         // Extraction des donnees de l'image
-        int pixels[] = new int[largeur*hauteur];
+        int[] pixels = new int[largeur*hauteur];
         PixelGrabber pg = new PixelGrabber(image,0,0,largeur,hauteur,pixels,0,largeur);
         try 
         {
@@ -361,7 +361,7 @@ public class CImageRGB extends CImage
         } 
         catch (InterruptedException ex) 
         {
-            throw new CImageRGBException("Probleme avec PixelGrabber");
+            throw new CImageRGBException("Problème avec PixelGrabber");
         }
     }
     
@@ -419,7 +419,7 @@ public class CImageRGB extends CImage
         int[][] green = new int[largeur][hauteur];
         int[][] blue = new int[largeur][hauteur];
         try { getMatricesRGB(red,green,blue); } 
-        catch (CImageRGBException ex) { System.out.println("Erreur interne inexpliquee..."); }
+        catch (CImageRGBException ex) { System.out.println("Erreur interne inexpliquée..."); }
         int[][] matrice = new int[largeur][hauteur];
         for(int x=0 ; x<largeur ; x++)
             for(int y=0 ; y<hauteur ; y++)
@@ -428,7 +428,7 @@ public class CImageRGB extends CImage
                 matrice[x][y] = val;
             }
         try { return new CImageNG(matrice); } 
-        catch (CImageNGException ex) { System.out.println("Erreur interne inexpliquee..."); }
+        catch (CImageNGException ex) { System.out.println("Erreur interne inexpliquée..."); }
         return null;
     }
 }

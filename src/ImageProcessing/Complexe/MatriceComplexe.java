@@ -2,9 +2,9 @@ package ImageProcessing.Complexe;
 
 public class MatriceComplexe 
 {
-    private Complexe  m[][];
-    private int       lignes;
-    private int       colonnes;
+    private final Complexe[][] m;
+    private final int lignes;
+    private final int colonnes;
     
     /** Creates a new instance of MatriceComplexe */
     public MatriceComplexe(int l,int c) 
@@ -35,7 +35,7 @@ public class MatriceComplexe
 
     public double[][] getPartieReelle()
     {
-        double d[][] = new double[lignes][colonnes];
+        double[][] d = new double[lignes][colonnes];
         for(int i=0 ; i<lignes ; i++)
             for(int j=0 ; j<colonnes ; j++)
                 d[i][j] = m[i][j].getPartieReelle();
@@ -44,7 +44,7 @@ public class MatriceComplexe
 
     public double[][] getPartieImaginaire()
     {
-        double d[][] = new double[lignes][colonnes];
+        double[][] d = new double[lignes][colonnes];
         for(int i=0 ; i<lignes ; i++)
             for(int j=0 ; j<colonnes ; j++)
                 d[i][j] = m[i][j].getPartieImaginaire();
@@ -53,7 +53,7 @@ public class MatriceComplexe
 
     public double[][] getModule()
     {
-        double d[][] = new double[lignes][colonnes];
+        double[][] d = new double[lignes][colonnes];
         for(int i=0 ; i<lignes ; i++)
             for(int j=0 ; j<colonnes ; j++)
                 d[i][j] = m[i][j].getModule();
@@ -62,7 +62,7 @@ public class MatriceComplexe
      
     public double[][] getPhase()
     {
-        double d[][] = new double[lignes][colonnes];
+        double[][] d = new double[lignes][colonnes];
         for(int i=0 ; i<lignes ; i++)
             for(int j=0 ; j<colonnes ; j++)
                 d[i][j] = m[i][j].getPhase();

@@ -236,6 +236,75 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenuFiltrageLineaire">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Filtrage lin&#xe9;aire"/>
+          </Properties>
+          <SubComponents>
+            <Menu class="javax.swing.JMenu" name="jMenuFiltrageLineaireGlobal">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Global"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFiltrePasseBasIdeal">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Passe-bas id&#xe9;al"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFiltrePasseBasIdealActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFiltrePasseHautIdeal">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Passe-haut id&#xe9;al"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFiltrePasseHautIdealActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFiltrePasseBasButterworth">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Passe-bas Butterworth"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFiltrePasseBasButterworthActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFiltrePasseHautButterworth">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Passe-haut Butterworth"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFiltrePasseHautButterworthActionPerformed"/>
+                  </Events>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+            <Menu class="javax.swing.JMenu" name="jMenuFiltrageLineaireLocal">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Local"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFiltreMasqueConvolution">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Masque de convolution"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFiltreMasqueConvolutionActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItemFiltreMoyenneur">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Moyenneur"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemFiltreMoyenneurActionPerformed"/>
+                  </Events>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
+          </SubComponents>
+        </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>

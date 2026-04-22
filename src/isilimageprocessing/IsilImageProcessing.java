@@ -7,6 +7,8 @@ import CImage.Observers.Events.*;
 import ImageProcessing.Complexe.MatriceComplexe;
 import ImageProcessing.Fourier.Fourier;
 import ImageProcessing.Histogramme.Histogramme;
+import ImageProcessing.Lineaire.FiltrageLineaireGlobal;
+import ImageProcessing.Lineaire.FiltrageLineaireLocal;
 import isilimageprocessing.Dialogues.*;
 import java.awt.*;
 import java.io.*;
@@ -50,6 +52,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuDessiner.setEnabled(false);
         jMenuFourier.setEnabled(false);
         jMenuHistogramme.setEnabled(false);
+        jMenuFiltrageLineaire.setEnabled(false);
         
         couleurPinceauRGB = Color.BLACK;
         couleurPinceauNG = 0;
@@ -93,6 +96,15 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuItemFourierAfficherPartieImaginaire = new javax.swing.JMenuItem();
         jMenuHistogramme = new javax.swing.JMenu();
         jMenuHistogrammeAfficher = new javax.swing.JMenuItem();
+        jMenuFiltrageLineaire = new javax.swing.JMenu();
+        jMenuFiltrageLineaireGlobal = new javax.swing.JMenu();
+        jMenuItemFiltrePasseBasIdeal = new javax.swing.JMenuItem();
+        jMenuItemFiltrePasseHautIdeal = new javax.swing.JMenuItem();
+        jMenuItemFiltrePasseBasButterworth = new javax.swing.JMenuItem();
+        jMenuItemFiltrePasseHautButterworth = new javax.swing.JMenuItem();
+        jMenuFiltrageLineaireLocal = new javax.swing.JMenu();
+        jMenuItemFiltreMasqueConvolution = new javax.swing.JMenuItem();
+        jMenuItemFiltreMoyenneur = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Isil Image Processing");
@@ -210,6 +222,45 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
 
         jMenuBar1.add(jMenuHistogramme);
 
+        jMenuFiltrageLineaire.setText("Filtrage linéaire");
+        ajouteTraceMenu(jMenuFiltrageLineaire, "Filtrage linéaire");
+
+        jMenuFiltrageLineaireGlobal.setText("Global");
+        ajouteTraceMenu(jMenuFiltrageLineaireGlobal, "Filtrage linéaire > Global");
+
+        jMenuItemFiltrePasseBasIdeal.setText("Passe-bas idéal");
+        jMenuItemFiltrePasseBasIdeal.addActionListener(this::jMenuItemFiltrePasseBasIdealActionPerformed);
+        jMenuFiltrageLineaireGlobal.add(jMenuItemFiltrePasseBasIdeal);
+
+        jMenuItemFiltrePasseHautIdeal.setText("Passe-haut idéal");
+        jMenuItemFiltrePasseHautIdeal.addActionListener(this::jMenuItemFiltrePasseHautIdealActionPerformed);
+        jMenuFiltrageLineaireGlobal.add(jMenuItemFiltrePasseHautIdeal);
+
+        jMenuItemFiltrePasseBasButterworth.setText("Passe-bas Butterworth");
+        jMenuItemFiltrePasseBasButterworth.addActionListener(this::jMenuItemFiltrePasseBasButterworthActionPerformed);
+        jMenuFiltrageLineaireGlobal.add(jMenuItemFiltrePasseBasButterworth);
+
+        jMenuItemFiltrePasseHautButterworth.setText("Passe-haut Butterworth");
+        jMenuItemFiltrePasseHautButterworth.addActionListener(this::jMenuItemFiltrePasseHautButterworthActionPerformed);
+        jMenuFiltrageLineaireGlobal.add(jMenuItemFiltrePasseHautButterworth);
+
+        jMenuFiltrageLineaire.add(jMenuFiltrageLineaireGlobal);
+
+        jMenuFiltrageLineaireLocal.setText("Local");
+        ajouteTraceMenu(jMenuFiltrageLineaireLocal, "Filtrage linéaire > Local");
+
+        jMenuItemFiltreMasqueConvolution.setText("Masque de convolution");
+        jMenuItemFiltreMasqueConvolution.addActionListener(this::jMenuItemFiltreMasqueConvolutionActionPerformed);
+        jMenuFiltrageLineaireLocal.add(jMenuItemFiltreMasqueConvolution);
+
+        jMenuItemFiltreMoyenneur.setText("Moyenneur");
+        jMenuItemFiltreMoyenneur.addActionListener(this::jMenuItemFiltreMoyenneurActionPerformed);
+        jMenuFiltrageLineaireLocal.add(jMenuItemFiltreMoyenneur);
+
+        jMenuFiltrageLineaire.add(jMenuFiltrageLineaireLocal);
+
+        jMenuBar1.add(jMenuFiltrageLineaire);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -271,6 +322,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuDessiner.setEnabled(true);
         jMenuFourier.setEnabled(true);
         jMenuHistogramme.setEnabled(true);
+        jMenuFiltrageLineaire.setEnabled(true);
     }
     
     private void activeMenusRGB()
@@ -278,6 +330,180 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuDessiner.setEnabled(true);
         jMenuFourier.setEnabled(false);
         jMenuHistogramme.setEnabled(false);
+        jMenuFiltrageLineaire.setEnabled(false);
+    }
+
+    private void jMenuItemFiltrePasseBasIdealActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Filtrage linéaire > Global > Passe-bas idéal");
+        Integer frequenceCoupure = demandeEntier("Fréquence de coupure", 1);
+        if (frequenceCoupure == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueFiltreGlobal(FiltrageLineaireGlobal.filtrePasseBasIdeal(matrice, frequenceCoupure));
+    }
+
+    private void jMenuItemFiltrePasseHautIdealActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Filtrage linéaire > Global > Passe-haut idéal");
+        Integer frequenceCoupure = demandeEntier("Fréquence de coupure", 1);
+        if (frequenceCoupure == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueFiltreGlobal(FiltrageLineaireGlobal.filtrePasseHautIdeal(matrice, frequenceCoupure));
+    }
+
+    private void jMenuItemFiltrePasseBasButterworthActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Filtrage lineaire > Global > Passe-bas Butterworth");
+        Integer frequenceCoupure = demandeEntier("Frequence de coupure", 1);
+        if (frequenceCoupure == null) return;
+        Integer ordre = demandeEntier("Ordre du filtre", 1);
+        if (ordre == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueFiltreGlobal(FiltrageLineaireGlobal.filtrePasseBasButterworth(matrice, frequenceCoupure, ordre));
+    }
+
+    private void jMenuItemFiltrePasseHautButterworthActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Filtrage lineaire > Global > Passe-haut Butterworth");
+        Integer frequenceCoupure = demandeEntier("Fréquence de coupure", 1);
+        if (frequenceCoupure == null) return;
+        Integer ordre = demandeEntier("Ordre du filtre", 1);
+        if (ordre == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueFiltreGlobal(FiltrageLineaireGlobal.filtrePasseHautButterworth(matrice, frequenceCoupure, ordre));
+    }
+
+    private Integer demandeEntier(String libelle, int minimum) {
+        while (true) {
+            String valeur = JOptionPane.showInputDialog(this, libelle + " :", minimum);
+            if (valeur == null) return null;
+
+            try {
+                int entier = Integer.parseInt(valeur.trim());
+                if (entier >= minimum) return entier;
+            }
+            catch (NumberFormatException ignored) {
+            }
+
+            JOptionPane.showMessageDialog(this, libelle + " doit être un entier supérieur ou égal à " + minimum + ".", "Valeur invalide", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void appliqueFiltreGlobal(int[][] matrice) {
+        try {
+            if (matrice == null) {
+                JOptionPane.showMessageDialog(this, "Le filtre n'a pas retourné d'image.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            imageNG = new CImageNG(matrice);
+            observer.setCImage(imageNG);
+            imageRGB = null;
+            activeMenusNG();
+        }
+        catch (CImageNGException ex) {
+            JOptionPane.showMessageDialog(this, "Erreur CImageNG : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private int[][] getMatriceImageNG() {
+        try {
+            return imageNG.getMatrice();
+        }
+        catch (CImageNGException ex) {
+            JOptionPane.showMessageDialog(this, "Erreur CImageNG : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    private void jMenuItemFiltreMasqueConvolutionActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Filtrage linéaire > Local > Masque de convolution");
+        JTextArea textArea = new JTextArea("0 -1 0\n-1 5 -1\n0 -1 0", 6, 24);
+        int choix = JOptionPane.showConfirmDialog(this, new JScrollPane(textArea), "Masque de convolution", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (choix != JOptionPane.OK_OPTION) return;
+
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+
+        try {
+            double[][] masque = parseMasqueConvolution(textArea.getText());
+            appliqueFiltreGlobal(FiltrageLineaireLocal.filtreMasqueConvolution(matrice, masque));
+        }
+        catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Masque invalide", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void jMenuItemFiltreMoyenneurActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Filtrage linéaire > Local > Moyenneur");
+        Integer tailleMasque = demandeEntier("Taille du masque", 1);
+        if (tailleMasque == null) return;
+
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+
+        try {
+            appliqueFiltreGlobal(FiltrageLineaireLocal.filtreMoyenneur(matrice, tailleMasque));
+        }
+        catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Valeur invalide", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private double[][] parseMasqueConvolution(String texte) {
+        String texteMasque = texte.trim();
+        if (texteMasque.isEmpty()) {
+            throw new IllegalArgumentException("Le masque ne peut pas être vide.");
+        }
+
+        String[] lignes = texteMasque.split("\\R+");
+        double[][] masque = null;
+        int nbColonnes = -1;
+
+        for (int i = 0; i < lignes.length; i++) {
+            String[] valeurs = lignes[i].trim().split("[,;\\s]+");
+
+            if (nbColonnes == -1) {
+                nbColonnes = valeurs.length;
+                masque = new double[lignes.length][nbColonnes];
+            }
+            else if (valeurs.length != nbColonnes) {
+                throw new IllegalArgumentException("Toutes les lignes du masque doivent avoir la même taille.");
+            }
+
+            for (int j = 0; j < valeurs.length; j++) {
+                try {
+                    masque[i][j] = Double.parseDouble(valeurs[j]);
+                }
+                catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException("Le masque doit contenir uniquement des nombres.");
+                }
+            }
+        }
+
+        if (masque.length != nbColonnes) {
+            throw new IllegalArgumentException("Le masque doit être carré.");
+        }
+
+        if (masque.length % 2 == 0) {
+            throw new IllegalArgumentException("La taille du masque doit être impaire.");
+        }
+
+        return masque;
+    }
+
+    private void ajouteTraceMenu(javax.swing.JMenu menu, String libelle) {
+        menu.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuSelected(javax.swing.event.MenuEvent e) {
+                System.out.println(libelle);
+            }
+
+            public void menuDeselected(javax.swing.event.MenuEvent e) {
+            }
+
+            public void menuCanceled(javax.swing.event.MenuEvent e) {
+            }
+        });
     }
     
     private void jCheckBoxMenuItemDessinerCerclePleinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemDessinerCerclePleinActionPerformed
@@ -696,11 +922,20 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JMenu jMenuDessiner;
     private javax.swing.JMenu jMenuFourier;
     private javax.swing.JMenu jMenuFourierAfficher;
+    private javax.swing.JMenu jMenuFiltrageLineaire;
+    private javax.swing.JMenu jMenuFiltrageLineaireGlobal;
+    private javax.swing.JMenu jMenuFiltrageLineaireLocal;
     private javax.swing.JMenu jMenuHistogramme;
     private javax.swing.JMenuItem jMenuHistogrammeAfficher;
     private javax.swing.JMenu jMenuImage;
     private javax.swing.JMenuItem jMenuItemCouleurPinceau;
     private javax.swing.JMenuItem jMenuItemEnregistrerSous;
+    private javax.swing.JMenuItem jMenuItemFiltrePasseBasButterworth;
+    private javax.swing.JMenuItem jMenuItemFiltrePasseBasIdeal;
+    private javax.swing.JMenuItem jMenuItemFiltrePasseHautButterworth;
+    private javax.swing.JMenuItem jMenuItemFiltrePasseHautIdeal;
+    private javax.swing.JMenuItem jMenuItemFiltreMasqueConvolution;
+    private javax.swing.JMenuItem jMenuItemFiltreMoyenneur;
     private javax.swing.JMenuItem jMenuItemFourierAfficherModule;
     private javax.swing.JMenuItem jMenuItemFourierAfficherPartieImaginaire;
     private javax.swing.JMenuItem jMenuItemFourierAfficherPartieReelle;

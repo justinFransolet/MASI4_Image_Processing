@@ -9,6 +9,8 @@ import ImageProcessing.Fourier.Fourier;
 import ImageProcessing.Histogramme.Histogramme;
 import ImageProcessing.Lineaire.FiltrageLineaireGlobal;
 import ImageProcessing.Lineaire.FiltrageLineaireLocal;
+import ImageProcessing.NonLineaire.MorphoComplexe;
+import ImageProcessing.NonLineaire.MorphoElementaire;
 import isilimageprocessing.Dialogues.*;
 import java.awt.*;
 import java.io.*;
@@ -53,6 +55,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuFourier.setEnabled(false);
         jMenuHistogramme.setEnabled(false);
         jMenuFiltrageLineaire.setEnabled(false);
+        jMenuTraitementNonLineaire.setEnabled(false);
         
         couleurPinceauRGB = Color.BLACK;
         couleurPinceauNG = 0;
@@ -105,6 +108,16 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuFiltrageLineaireLocal = new javax.swing.JMenu();
         jMenuItemFiltreMasqueConvolution = new javax.swing.JMenuItem();
         jMenuItemFiltreMoyenneur = new javax.swing.JMenuItem();
+        jMenuTraitementNonLineaire = new javax.swing.JMenu();
+        jMenuMorphoElementaire = new javax.swing.JMenu();
+        jMenuItemMorphoErosion = new javax.swing.JMenuItem();
+        jMenuItemMorphoDilatation = new javax.swing.JMenuItem();
+        jMenuItemMorphoOuverture = new javax.swing.JMenuItem();
+        jMenuItemMorphoFermeture = new javax.swing.JMenuItem();
+        jMenuMorphoComplexe = new javax.swing.JMenu();
+        jMenuItemMorphoDilatationGeodesique = new javax.swing.JMenuItem();
+        jMenuItemMorphoReconstructionGeodesique = new javax.swing.JMenuItem();
+        jMenuItemMorphoFiltreMedian = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Isil Image Processing");
@@ -261,6 +274,49 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
 
         jMenuBar1.add(jMenuFiltrageLineaire);
 
+        jMenuTraitementNonLineaire.setText("Traitement non-linéaire");
+        ajouteTraceMenu(jMenuTraitementNonLineaire, "Traitement non-linéaire");
+
+        jMenuMorphoElementaire.setText("Elémentaire");
+        ajouteTraceMenu(jMenuMorphoElementaire, "Traitement non-linéaire > Elémentaire");
+
+        jMenuItemMorphoErosion.setText("Erosion");
+        jMenuItemMorphoErosion.addActionListener(this::jMenuItemMorphoErosionActionPerformed);
+        jMenuMorphoElementaire.add(jMenuItemMorphoErosion);
+
+        jMenuItemMorphoDilatation.setText("Dilatation");
+        jMenuItemMorphoDilatation.addActionListener(this::jMenuItemMorphoDilatationActionPerformed);
+        jMenuMorphoElementaire.add(jMenuItemMorphoDilatation);
+
+        jMenuItemMorphoOuverture.setText("Ouverture");
+        jMenuItemMorphoOuverture.addActionListener(this::jMenuItemMorphoOuvertureActionPerformed);
+        jMenuMorphoElementaire.add(jMenuItemMorphoOuverture);
+
+        jMenuItemMorphoFermeture.setText("Fermeture");
+        jMenuItemMorphoFermeture.addActionListener(this::jMenuItemMorphoFermetureActionPerformed);
+        jMenuMorphoElementaire.add(jMenuItemMorphoFermeture);
+
+        jMenuTraitementNonLineaire.add(jMenuMorphoElementaire);
+
+        jMenuMorphoComplexe.setText("Complexe");
+        ajouteTraceMenu(jMenuMorphoComplexe, "Traitement non-linéaire > Complexe");
+
+        jMenuItemMorphoDilatationGeodesique.setText("Dilatation géodésique");
+        jMenuItemMorphoDilatationGeodesique.addActionListener(this::jMenuItemMorphoDilatationGeodesiqueActionPerformed);
+        jMenuMorphoComplexe.add(jMenuItemMorphoDilatationGeodesique);
+
+        jMenuItemMorphoReconstructionGeodesique.setText("Reconstruction géodésique");
+        jMenuItemMorphoReconstructionGeodesique.addActionListener(this::jMenuItemMorphoReconstructionGeodesiqueActionPerformed);
+        jMenuMorphoComplexe.add(jMenuItemMorphoReconstructionGeodesique);
+
+        jMenuItemMorphoFiltreMedian.setText("Filtre médian");
+        jMenuItemMorphoFiltreMedian.addActionListener(this::jMenuItemMorphoFiltreMedianActionPerformed);
+        jMenuMorphoComplexe.add(jMenuItemMorphoFiltreMedian);
+
+        jMenuTraitementNonLineaire.add(jMenuMorphoComplexe);
+
+        jMenuBar1.add(jMenuTraitementNonLineaire);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -323,6 +379,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuFourier.setEnabled(true);
         jMenuHistogramme.setEnabled(true);
         jMenuFiltrageLineaire.setEnabled(true);
+        jMenuTraitementNonLineaire.setEnabled(true);
     }
     
     private void activeMenusRGB()
@@ -331,6 +388,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuFourier.setEnabled(false);
         jMenuHistogramme.setEnabled(false);
         jMenuFiltrageLineaire.setEnabled(false);
+        jMenuTraitementNonLineaire.setEnabled(false);
     }
 
     private void jMenuItemFiltrePasseBasIdealActionPerformed(java.awt.event.ActionEvent evt) {
@@ -389,6 +447,16 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         }
     }
 
+    private Integer demandeTailleMasqueImpaire() {
+        while (true) {
+            Integer tailleMasque = demandeEntier("Taille du masque", 1);
+            if (tailleMasque == null) return null;
+            if (tailleMasque % 2 == 1) return tailleMasque;
+
+            JOptionPane.showMessageDialog(this, "La taille du masque doit etre impaire.", "Valeur invalide", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void appliqueFiltreGlobal(int[][] matrice) {
         try {
             if (matrice == null) {
@@ -414,6 +482,85 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
             JOptionPane.showMessageDialog(this, "Erreur CImageNG : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
             return null;
         }
+    }
+
+    private int[][] demandeMasqueGeodesique() {
+        JFileChooser choix = new JFileChooser();
+        int retour = choix.showOpenDialog(this);
+        if (retour != JFileChooser.APPROVE_OPTION) return null;
+
+        try {
+            return new CImageNG(choix.getSelectedFile()).getMatrice();
+        }
+        catch (IOException | CImageNGException ex) {
+            JOptionPane.showMessageDialog(this, "Impossible de charger le masque geodesique : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    private void jMenuItemMorphoErosionActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Traitement non-lineaire > Elementaire > Erosion");
+        Integer tailleMasque = demandeTailleMasqueImpaire();
+        if (tailleMasque == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueFiltreGlobal(MorphoElementaire.erosion(matrice, tailleMasque));
+    }
+
+    private void jMenuItemMorphoDilatationActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Traitement non-lineaire > Elementaire > Dilatation");
+        Integer tailleMasque = demandeTailleMasqueImpaire();
+        if (tailleMasque == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueFiltreGlobal(MorphoElementaire.dilatation(matrice, tailleMasque));
+    }
+
+    private void jMenuItemMorphoOuvertureActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Traitement non-lineaire > Elementaire > Ouverture");
+        Integer tailleMasque = demandeTailleMasqueImpaire();
+        if (tailleMasque == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueFiltreGlobal(MorphoElementaire.ouverture(matrice, tailleMasque));
+    }
+
+    private void jMenuItemMorphoFermetureActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Traitement non-lineaire > Elementaire > Fermeture");
+        Integer tailleMasque = demandeTailleMasqueImpaire();
+        if (tailleMasque == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueFiltreGlobal(MorphoElementaire.fermeture(matrice, tailleMasque));
+    }
+
+    private void jMenuItemMorphoDilatationGeodesiqueActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Traitement non-lineaire > Complexe > Dilatation geodesique");
+        Integer nbIter = demandeEntier("Nombre d'iterations", 1);
+        if (nbIter == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        int[][] masqueGeodesique = demandeMasqueGeodesique();
+        if (masqueGeodesique == null) return;
+        appliqueFiltreGlobal(MorphoComplexe.dilatationGeodesique(matrice, masqueGeodesique, nbIter));
+    }
+
+    private void jMenuItemMorphoReconstructionGeodesiqueActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Traitement non-lineaire > Complexe > Reconstruction geodesique");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        int[][] masqueGeodesique = demandeMasqueGeodesique();
+        if (masqueGeodesique == null) return;
+        appliqueFiltreGlobal(MorphoComplexe.reconstructionGeodesique(matrice, masqueGeodesique));
+    }
+
+    private void jMenuItemMorphoFiltreMedianActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Traitement non-lineaire > Complexe > Filtre median");
+        Integer tailleMasque = demandeTailleMasqueImpaire();
+        if (tailleMasque == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueFiltreGlobal(MorphoComplexe.filtreMedian(matrice, tailleMasque));
     }
 
     private void jMenuItemFiltreMasqueConvolutionActionPerformed(java.awt.event.ActionEvent evt) {
@@ -928,6 +1075,13 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JMenu jMenuHistogramme;
     private javax.swing.JMenuItem jMenuHistogrammeAfficher;
     private javax.swing.JMenu jMenuImage;
+    private javax.swing.JMenuItem jMenuItemMorphoDilatation;
+    private javax.swing.JMenuItem jMenuItemMorphoDilatationGeodesique;
+    private javax.swing.JMenuItem jMenuItemMorphoErosion;
+    private javax.swing.JMenuItem jMenuItemMorphoFermeture;
+    private javax.swing.JMenuItem jMenuItemMorphoFiltreMedian;
+    private javax.swing.JMenuItem jMenuItemMorphoOuverture;
+    private javax.swing.JMenuItem jMenuItemMorphoReconstructionGeodesique;
     private javax.swing.JMenuItem jMenuItemCouleurPinceau;
     private javax.swing.JMenuItem jMenuItemEnregistrerSous;
     private javax.swing.JMenuItem jMenuItemFiltrePasseBasButterworth;
@@ -944,9 +1098,12 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JMenuItem jMenuItemNouvelleRGB;
     private javax.swing.JMenuItem jMenuItemOuvrirNG;
     private javax.swing.JMenuItem jMenuItemOuvrirRGB;
+    private javax.swing.JMenu jMenuMorphoComplexe;
+    private javax.swing.JMenu jMenuMorphoElementaire;
     private javax.swing.JMenu jMenuNouvelle;
     private javax.swing.JMenu jMenuOuvrir;
     private javax.swing.JMenuItem jMenuQuitter;
+    private javax.swing.JMenu jMenuTraitementNonLineaire;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;

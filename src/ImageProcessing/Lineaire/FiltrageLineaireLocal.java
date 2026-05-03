@@ -2,6 +2,20 @@ package ImageProcessing.Lineaire;
 
 public class FiltrageLineaireLocal {
 
+
+    /**
+     * Applique un masque de convolution quelconque sur une image.
+     *
+     * Principe :
+     * - pour chaque pixel, on regarde son voisinage ;
+     * - chaque pixel voisin est multiplié par le coefficient correspondant du masque ;
+     * - on additionne tous les résultats ;
+     * - cette somme devient la nouvelle valeur du pixel.
+     *
+     * Le masque doit être :
+     * - carré ;
+     * - de taille impaire : 3x3, 5x5, 7x7, etc.
+     */
     public static int [][] filtreMasqueConvolution(int [][] image, double [][] masque) {
 
         System.out.println("Fonction filtreMasqueConvolution");
@@ -86,6 +100,18 @@ public class FiltrageLineaireLocal {
         return resultat;
     }
 
+    /**
+     * Applique un filtre moyenneur.
+     *
+     * Principe :
+     * - construit un masque rempli avec la valeur 1 / (tailleMasque²) ;
+     * - applique ce masque avec la méthode générale de convolution.
+     *
+     * Effet :
+     * - lissage ;
+     * - flou ;
+     * - réduction de petits détails et du bruit fin.
+     */
     public static int [][] filtreMoyenneur(int [][] image, int tailleMasque) {
 
         System.out.println("Fonction filtreMoyenneur");
@@ -114,7 +140,7 @@ public class FiltrageLineaireLocal {
         return filtreMasqueConvolution(image, masque);
     }
 
-
+    /** Ramène une valeur dans l'intervalle valide des niveaux de gris : [0,255]. */
     private static int clamp(int valeur)
     {
         if (valeur < 0) return 0;

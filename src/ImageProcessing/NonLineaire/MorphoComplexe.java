@@ -4,6 +4,21 @@ import java.util.Arrays;
 
 public class MorphoComplexe {
 
+    /**
+     * Réalise une dilatation géodésique.
+     *
+     * Principe :
+     * - on dilate l'image de départ ;
+     * - puis on limite le résultat par le masque géodésique ;
+     * - cette limitation se fait pixel par pixel avec un minimum :
+     *   resultat = min(dilatation(image), masqueGeodesique)
+     *
+     * nbIter indique combien de fois on répète cette opération.
+     *
+     * Utilisation typique :
+     * - surtout sur des images binaires ;
+     * - permet de faire grandir une région sans dépasser un masque imposé.
+     */
     public static int[][] dilatationGeodesique(int[][] image,int[][] masqueGeodesique, int nbIter) {
 
         System.out.println("Fonction dilatationGeodesique");
@@ -26,6 +41,18 @@ public class MorphoComplexe {
         return resultat;
     }
 
+    /**
+     * Réalise une reconstruction géodésique.
+     *
+     * Principe :
+     * - on applique des dilatations géodésiques successives ;
+     * - on s'arrête quand l'image ne change plus.
+     *
+     * Autrement dit :
+     * - on part d'un marqueur ;
+     * - on le fait grandir dans les limites du masque géodésique ;
+     * - la croissance s'arrête naturellement quand la stabilité est atteinte.
+     */
     public static int[][] reconstructionGeodesique(int[][] image, int[][] masqueGeodesique) {
 
         System.out.println("Fonction reconstructionGeodesique");
@@ -46,6 +73,19 @@ public class MorphoComplexe {
         return courante;
     }
 
+    /**
+     * Réalise un filtre médian.
+     *
+     * Principe :
+     * - pour chaque pixel, on récupère les valeurs du voisinage ;
+     * - on trie ces valeurs ;
+     * - on remplace le pixel par la valeur médiane.
+     *
+     * Effet :
+     * - très utile pour supprimer le bruit impulsionnel,
+     *   par exemple le bruit "sel et poivre" ;
+     * - conserve souvent mieux les contours qu'un filtre moyenneur.
+     */
     public static int[][] filtreMedian(int[][] image, int tailleMasque) {
 
         System.out.println("Fonction filtreMedian");
@@ -87,6 +127,12 @@ public class MorphoComplexe {
         return resultat;
     }
 
+    /**
+     * Calcule le minimum pixel par pixel entre deux images.
+     *
+     * Utilisé pour la dilatation géodésique :
+     * le masque géodésique impose une limite à ne pas dépasser.
+     */
     private static int[][] minimumPixelParPixel(int[][] image1, int[][] image2) {
         int largeur = image1.length;
         int hauteur = image1[0].length;
@@ -102,6 +148,12 @@ public class MorphoComplexe {
         return resultat;
     }
 
+    /**
+     * Crée une copie complète d'une image.
+     *
+     * Important :
+     * - cela évite de modifier directement la matrice reçue en paramètre.
+     */
     private static int[][] copie(int[][] image) {
         int largeur = image.length;
         int hauteur = image[0].length;
@@ -115,6 +167,11 @@ public class MorphoComplexe {
         return copie;
     }
 
+    /**
+     * Compare deux images pixel par pixel.
+     *
+     * Utilisé pour savoir quand la reconstruction géodésique est stabilisée.
+     */
     private static boolean matricesEgales(int[][] image1, int[][] image2) {
         for (int x = 0; x < image1.length; x++) {
             for (int y = 0; y < image1[0].length; y++) {
@@ -127,6 +184,12 @@ public class MorphoComplexe {
         return true;
     }
 
+    /**
+     * Vérifie que l'image est utilisable :
+     * - elle ne doit pas être null ;
+     * - elle doit avoir une largeur et une hauteur ;
+     * - toutes ses colonnes doivent avoir la même hauteur.
+     */
     private static void verifierImage(int[][] image) {
         if (image == null || image.length == 0 || image[0].length == 0) {
             throw new IllegalArgumentException("Image invalide.");
@@ -141,12 +204,25 @@ public class MorphoComplexe {
         }
     }
 
+    /**
+     * Vérifie que deux images ont exactement les mêmes dimensions.
+     *
+     * Nécessaire pour les opérations géodésiques,
+     * car on combine l'image et le masque pixel par pixel.
+     */
     private static void verifierMemeTaille(int[][] image1, int[][] image2) {
         if (image1.length != image2.length || image1[0].length != image2[0].length) {
             throw new IllegalArgumentException("L'image et le masque géodésique doivent avoir la même taille.");
         }
     }
 
+    /**
+     * Vérifie que la taille du masque est valide.
+     *
+     * Le masque doit être :
+     * - de taille strictement positive ;
+     * - impair, pour avoir un pixel central.
+     */
     private static void verifierTailleMasque(int tailleMasque) {
         if (tailleMasque <= 0) {
             throw new IllegalArgumentException("La taille du masque doit être > 0.");

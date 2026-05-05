@@ -16,4 +16,94 @@ public class Histogramme
         
         return histo;
     }
+
+    public static int minimum(int[][] image) {
+
+        System.out.println("Fonction minimum");
+
+        //TODO (étape 3.1)
+
+        return 0;
+    }
+
+    public static int maximum(int[][] image) {
+
+        System.out.println("Fonction maximum");
+
+        //TODO (étape 3.2)
+
+        return 0;
+    }
+
+    public static int luminance(int[][] image) {
+
+        System.out.println("Fonction luminance");
+
+        //TODO (étape 3.3)
+
+        return 0;
+    }
+
+    public static double contraste1(int[][] image) {
+
+        System.out.println("Fonction contraste1");
+
+        //TODO (étape 3.4)
+
+        return 0;
+    }
+
+    public static double contraste2(int[][] image) {
+
+        System.out.println("Fonction contraste2");
+
+        //TODO (étape 3.5)
+
+        return 0;
+    }
+
+    public static int[][] rehaussement(int[][] image, int[] courbeTonale) {
+
+        System.out.println("Fonction rehaussement");
+
+        //TODO (étape 3.6)
+
+        return null;
+    }
+
+    public static int[] creeCourbeTonaleLineaireSaturation(int smin, int smax) {
+
+        System.out.println("Fonction creeCourbeTonaleLineaireSaturation");
+
+        //TODO (étape 3.7)
+
+        return null;
+    }
+
+    public static int[] creeCourbeTonaleGamma(double gamma) {
+
+        System.out.println("Fonction creeCourbeTonaleGamma");
+
+        //TODO (étape 3.8)
+
+        return null;
+    }
+
+    public static int[] creeCourbeTonaleNegatif() {
+
+        System.out.println("Fonction creeCourbeTonaleNegatif");
+
+        //TODO (étape 3.9)
+
+        return null;
+    }
+
+    public static int[] creeCourbeTonaleEgalisation(int[][] image) {
+
+        System.out.println("Fonction creeCourbeTonaleEgalisation");
+
+        //TODO (étape 3.10)
+
+        return null;
+    }
 }

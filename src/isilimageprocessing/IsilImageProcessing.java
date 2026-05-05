@@ -5,12 +5,15 @@ import CImage.Exceptions.*;
 import CImage.Observers.*;
 import CImage.Observers.Events.*;
 import ImageProcessing.Complexe.MatriceComplexe;
+import ImageProcessing.Contours.ContoursLineaire;
+import ImageProcessing.Contours.ContoursNonLineaire;
 import ImageProcessing.Fourier.Fourier;
 import ImageProcessing.Histogramme.Histogramme;
 import ImageProcessing.Lineaire.FiltrageLineaireGlobal;
 import ImageProcessing.Lineaire.FiltrageLineaireLocal;
 import ImageProcessing.NonLineaire.MorphoComplexe;
 import ImageProcessing.NonLineaire.MorphoElementaire;
+import ImageProcessing.Seuillage.Seuillage;
 import isilimageprocessing.Dialogues.*;
 import java.awt.*;
 import java.io.*;
@@ -54,6 +57,8 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuDessiner.setEnabled(false);
         jMenuFourier.setEnabled(false);
         jMenuHistogramme.setEnabled(false);
+        jMenuContours.setEnabled(false);
+        jMenuSeuillage.setEnabled(false);
         jMenuFiltrageLineaire.setEnabled(false);
         jMenuTraitementNonLineaire.setEnabled(false);
         
@@ -99,6 +104,28 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuItemFourierAfficherPartieImaginaire = new javax.swing.JMenuItem();
         jMenuHistogramme = new javax.swing.JMenu();
         jMenuHistogrammeAfficher = new javax.swing.JMenuItem();
+        jMenuHistogrammeParametres = new javax.swing.JMenuItem();
+        jMenuHistogrammeRehaussement = new javax.swing.JMenu();
+        jMenuItemHistogrammeLineaire = new javax.swing.JMenuItem();
+        jMenuItemHistogrammeLineaireSaturation = new javax.swing.JMenuItem();
+        jMenuItemHistogrammeGamma = new javax.swing.JMenuItem();
+        jMenuItemHistogrammeEgalisation = new javax.swing.JMenuItem();
+        jMenuItemHistogrammeNegatif = new javax.swing.JMenuItem();
+        jMenuContours = new javax.swing.JMenu();
+        jMenuContoursLineaire = new javax.swing.JMenu();
+        jMenuItemContoursGradientPrewitt = new javax.swing.JMenuItem();
+        jMenuItemContoursGradientSobel = new javax.swing.JMenuItem();
+        jMenuItemContoursLaplacien4 = new javax.swing.JMenuItem();
+        jMenuItemContoursLaplacien8 = new javax.swing.JMenuItem();
+        jMenuContoursNonLineaire = new javax.swing.JMenu();
+        jMenuItemContoursGradientErosion = new javax.swing.JMenuItem();
+        jMenuItemContoursGradientDilatation = new javax.swing.JMenuItem();
+        jMenuItemContoursGradientBeucher = new javax.swing.JMenuItem();
+        jMenuItemContoursLaplacienNonLineaire = new javax.swing.JMenuItem();
+        jMenuSeuillage = new javax.swing.JMenu();
+        jMenuItemSeuillageSimple = new javax.swing.JMenuItem();
+        jMenuItemSeuillageDouble = new javax.swing.JMenuItem();
+        jMenuItemSeuillageAutomatique = new javax.swing.JMenuItem();
         jMenuFiltrageLineaire = new javax.swing.JMenu();
         jMenuFiltrageLineaireGlobal = new javax.swing.JMenu();
         jMenuItemFiltrePasseBasIdeal = new javax.swing.JMenuItem();
@@ -233,7 +260,100 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuHistogrammeAfficher.addActionListener(this::jMenuHistogrammeAfficherActionPerformed);
         jMenuHistogramme.add(jMenuHistogrammeAfficher);
 
+        jMenuHistogrammeParametres.setText("Afficher les parametres de l'image");
+        jMenuHistogrammeParametres.addActionListener(this::jMenuHistogrammeParametresActionPerformed);
+        jMenuHistogramme.add(jMenuHistogrammeParametres);
+
+        jMenuHistogrammeRehaussement.setText("Rehaussement");
+        ajouteTraceMenu(jMenuHistogrammeRehaussement, "Histogramme > Rehaussement");
+
+        jMenuItemHistogrammeLineaire.setText("Lineaire");
+        jMenuItemHistogrammeLineaire.addActionListener(this::jMenuItemHistogrammeLineaireActionPerformed);
+        jMenuHistogrammeRehaussement.add(jMenuItemHistogrammeLineaire);
+
+        jMenuItemHistogrammeLineaireSaturation.setText("Lineaire avec saturation");
+        jMenuItemHistogrammeLineaireSaturation.addActionListener(this::jMenuItemHistogrammeLineaireSaturationActionPerformed);
+        jMenuHistogrammeRehaussement.add(jMenuItemHistogrammeLineaireSaturation);
+
+        jMenuItemHistogrammeGamma.setText("Gamma");
+        jMenuItemHistogrammeGamma.addActionListener(this::jMenuItemHistogrammeGammaActionPerformed);
+        jMenuHistogrammeRehaussement.add(jMenuItemHistogrammeGamma);
+
+        jMenuItemHistogrammeEgalisation.setText("Egalisation");
+        jMenuItemHistogrammeEgalisation.addActionListener(this::jMenuItemHistogrammeEgalisationActionPerformed);
+        jMenuHistogrammeRehaussement.add(jMenuItemHistogrammeEgalisation);
+
+        jMenuItemHistogrammeNegatif.setText("Negatif");
+        jMenuItemHistogrammeNegatif.addActionListener(this::jMenuItemHistogrammeNegatifActionPerformed);
+        jMenuHistogrammeRehaussement.add(jMenuItemHistogrammeNegatif);
+
+        jMenuHistogramme.add(jMenuHistogrammeRehaussement);
+
         jMenuBar1.add(jMenuHistogramme);
+
+        jMenuContours.setText("Contours");
+        ajouteTraceMenu(jMenuContours, "Contours");
+
+        jMenuContoursLineaire.setText("Lineaire");
+        ajouteTraceMenu(jMenuContoursLineaire, "Contours > Lineaire");
+
+        jMenuItemContoursGradientPrewitt.setText("Gradient Prewitt");
+        jMenuItemContoursGradientPrewitt.addActionListener(this::jMenuItemContoursGradientPrewittActionPerformed);
+        jMenuContoursLineaire.add(jMenuItemContoursGradientPrewitt);
+
+        jMenuItemContoursGradientSobel.setText("Gradient Sobel");
+        jMenuItemContoursGradientSobel.addActionListener(this::jMenuItemContoursGradientSobelActionPerformed);
+        jMenuContoursLineaire.add(jMenuItemContoursGradientSobel);
+
+        jMenuItemContoursLaplacien4.setText("Laplacien 4");
+        jMenuItemContoursLaplacien4.addActionListener(this::jMenuItemContoursLaplacien4ActionPerformed);
+        jMenuContoursLineaire.add(jMenuItemContoursLaplacien4);
+
+        jMenuItemContoursLaplacien8.setText("Laplacien 8");
+        jMenuItemContoursLaplacien8.addActionListener(this::jMenuItemContoursLaplacien8ActionPerformed);
+        jMenuContoursLineaire.add(jMenuItemContoursLaplacien8);
+
+        jMenuContours.add(jMenuContoursLineaire);
+
+        jMenuContoursNonLineaire.setText("Non-lineaire");
+        ajouteTraceMenu(jMenuContoursNonLineaire, "Contours > Non-lineaire");
+
+        jMenuItemContoursGradientErosion.setText("Gradient erosion");
+        jMenuItemContoursGradientErosion.addActionListener(this::jMenuItemContoursGradientErosionActionPerformed);
+        jMenuContoursNonLineaire.add(jMenuItemContoursGradientErosion);
+
+        jMenuItemContoursGradientDilatation.setText("Gradient dilatation");
+        jMenuItemContoursGradientDilatation.addActionListener(this::jMenuItemContoursGradientDilatationActionPerformed);
+        jMenuContoursNonLineaire.add(jMenuItemContoursGradientDilatation);
+
+        jMenuItemContoursGradientBeucher.setText("Gradient Beucher");
+        jMenuItemContoursGradientBeucher.addActionListener(this::jMenuItemContoursGradientBeucherActionPerformed);
+        jMenuContoursNonLineaire.add(jMenuItemContoursGradientBeucher);
+
+        jMenuItemContoursLaplacienNonLineaire.setText("Laplacien non-lineaire");
+        jMenuItemContoursLaplacienNonLineaire.addActionListener(this::jMenuItemContoursLaplacienNonLineaireActionPerformed);
+        jMenuContoursNonLineaire.add(jMenuItemContoursLaplacienNonLineaire);
+
+        jMenuContours.add(jMenuContoursNonLineaire);
+
+        jMenuBar1.add(jMenuContours);
+
+        jMenuSeuillage.setText("Seuillage");
+        ajouteTraceMenu(jMenuSeuillage, "Seuillage");
+
+        jMenuItemSeuillageSimple.setText("Seuillage simple");
+        jMenuItemSeuillageSimple.addActionListener(this::jMenuItemSeuillageSimpleActionPerformed);
+        jMenuSeuillage.add(jMenuItemSeuillageSimple);
+
+        jMenuItemSeuillageDouble.setText("Seuillage double");
+        jMenuItemSeuillageDouble.addActionListener(this::jMenuItemSeuillageDoubleActionPerformed);
+        jMenuSeuillage.add(jMenuItemSeuillageDouble);
+
+        jMenuItemSeuillageAutomatique.setText("Seuillage automatique");
+        jMenuItemSeuillageAutomatique.addActionListener(this::jMenuItemSeuillageAutomatiqueActionPerformed);
+        jMenuSeuillage.add(jMenuItemSeuillageAutomatique);
+
+        jMenuBar1.add(jMenuSeuillage);
 
         jMenuFiltrageLineaire.setText("Filtrage linéaire");
         ajouteTraceMenu(jMenuFiltrageLineaire, "Filtrage linéaire");
@@ -373,11 +493,223 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         frame.setVisible(true);
     }//GEN-LAST:event_jMenuHistogrammeAfficherActionPerformed
 
+    private void jMenuHistogrammeParametresActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Histogramme > Afficher les parametres de l'image");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+
+        int minimum = Histogramme.minimum(matrice);
+        int maximum = Histogramme.maximum(matrice);
+        int luminance = Histogramme.luminance(matrice);
+        double contraste1 = Histogramme.contraste1(matrice);
+        double contraste2 = Histogramme.contraste2(matrice);
+
+        JOptionPane.showMessageDialog(this,
+                "Minimum : " + minimum + "\n"
+                + "Maximum : " + maximum + "\n"
+                + "Luminance : " + luminance + "\n"
+                + "Contraste 1 : " + contraste1 + "\n"
+                + "Contraste 2 : " + contraste2,
+                "Parametres de l'image",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void jMenuItemHistogrammeLineaireActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Histogramme > Rehaussement > Lineaire");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+
+        int minimum = Histogramme.minimum(matrice);
+        int maximum = Histogramme.maximum(matrice);
+        int[] courbeTonale = Histogramme.creeCourbeTonaleLineaireSaturation(minimum, maximum);
+        appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "lineaire");
+    }
+
+    private void jMenuItemHistogrammeLineaireSaturationActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Histogramme > Rehaussement > Lineaire avec saturation");
+        Integer smin = demandeEntier("smin", 0);
+        if (smin == null) return;
+        Integer smax = demandeEntier("smax", 0);
+        if (smax == null) return;
+
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+
+        int[] courbeTonale = Histogramme.creeCourbeTonaleLineaireSaturation(smin, smax);
+        appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "lineaire avec saturation");
+    }
+
+    private void jMenuItemHistogrammeGammaActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Histogramme > Rehaussement > Gamma");
+        Double gamma = demandeDouble("Gamma", 0.1);
+        if (gamma == null) return;
+
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+
+        int[] courbeTonale = Histogramme.creeCourbeTonaleGamma(gamma);
+        appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "gamma");
+    }
+
+    private void jMenuItemHistogrammeEgalisationActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Histogramme > Rehaussement > Egalisation");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+
+        int[] courbeTonale = Histogramme.creeCourbeTonaleEgalisation(matrice);
+        appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "egalisation");
+    }
+
+    private void jMenuItemHistogrammeNegatifActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Histogramme > Rehaussement > Negatif");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+
+        int[] courbeTonale = Histogramme.creeCourbeTonaleNegatif();
+        appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "negatif");
+    }
+
+    private void appelleRehaussementAvecHistogrammes(int[][] matrice, int[] courbeTonale, String libelle) {
+        int[] histogrammeAvant = Histogramme.Histogramme256(matrice);
+        afficheHistogramme(histogrammeAvant, "Histogramme avant rehaussement " + libelle);
+
+        int[][] imageRehaussee = Histogramme.rehaussement(matrice, courbeTonale);
+        if (imageRehaussee == null) {
+            System.out.println("Le rehaussement " + libelle + " n'a pas retourne d'image.");
+            return;
+        }
+
+        int[] histogrammeApres = Histogramme.Histogramme256(imageRehaussee);
+        afficheHistogramme(histogrammeApres, "Histogramme apres rehaussement " + libelle);
+    }
+
+    private void afficheHistogramme(int[] histo, String titre) {
+        XYSeries serie = new XYSeries(titre);
+        for (int i = 0; i < 256; i++) serie.add(i, histo[i]);
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(serie);
+
+        JFreeChart chart = ChartFactory.createHistogram(titre, "Niveaux de gris", "Nombre de pixels", dataset, PlotOrientation.VERTICAL, false, false, false);
+
+        XYPlot plot = chart.getXYPlot();
+        ValueAxis axeX = plot.getDomainAxis();
+        axeX.setRange(0, 255);
+        plot.setDomainAxis(axeX);
+
+        ChartFrame frame = new ChartFrame(titre, chart);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    private void jMenuItemContoursGradientPrewittActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Contours > Lineaire > Gradient Prewitt");
+        Integer direction = demandeDirectionContour();
+        if (direction == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(ContoursLineaire.gradientPrewitt(matrice, direction), "gradient Prewitt");
+    }
+
+    private void jMenuItemContoursGradientSobelActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Contours > Lineaire > Gradient Sobel");
+        Integer direction = demandeDirectionContour();
+        if (direction == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(ContoursLineaire.gradientSobel(matrice, direction), "gradient Sobel");
+    }
+
+    private void jMenuItemContoursLaplacien4ActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Contours > Lineaire > Laplacien 4");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(ContoursLineaire.laplacien4(matrice), "laplacien 4");
+    }
+
+    private void jMenuItemContoursLaplacien8ActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Contours > Lineaire > Laplacien 8");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(ContoursLineaire.laplacien8(matrice), "laplacien 8");
+    }
+
+    private void jMenuItemContoursGradientErosionActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Contours > Non-lineaire > Gradient erosion");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(ContoursNonLineaire.gradientErosion(matrice), "gradient erosion");
+    }
+
+    private void jMenuItemContoursGradientDilatationActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Contours > Non-lineaire > Gradient dilatation");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(ContoursNonLineaire.gradientDilatation(matrice), "gradient dilatation");
+    }
+
+    private void jMenuItemContoursGradientBeucherActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Contours > Non-lineaire > Gradient Beucher");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(ContoursNonLineaire.gradientBeucher(matrice), "gradient Beucher");
+    }
+
+    private void jMenuItemContoursLaplacienNonLineaireActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Contours > Non-lineaire > Laplacien non-lineaire");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(ContoursNonLineaire.laplacienNonLineaire(matrice), "laplacien non-lineaire");
+    }
+
+    private void jMenuItemSeuillageSimpleActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Seuillage > Seuillage simple");
+        Integer seuil = demandeEntier("Seuil", 0);
+        if (seuil == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(Seuillage.seuillageSimple(matrice, seuil), "seuillage simple");
+    }
+
+    private void jMenuItemSeuillageDoubleActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Seuillage > Seuillage double");
+        Integer seuil1 = demandeEntier("Seuil 1", 0);
+        if (seuil1 == null) return;
+        Integer seuil2 = demandeEntier("Seuil 2", 0);
+        if (seuil2 == null) return;
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(Seuillage.seuillageDouble(matrice, seuil1, seuil2), "seuillage double");
+    }
+
+    private void jMenuItemSeuillageAutomatiqueActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("Seuillage > Seuillage automatique");
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null) return;
+        appliqueResultatStub(Seuillage.seuillageAutomatique(matrice), "seuillage automatique");
+    }
+
+    private Integer demandeDirectionContour() {
+        Object[] choix = {"Horizontale", "Verticale"};
+        int reponse = JOptionPane.showOptionDialog(this, "Direction du gradient :", "Direction", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, choix, choix[0]);
+        if (reponse == JOptionPane.CLOSED_OPTION) return null;
+        return reponse == 0 ? 1 : 2;
+    }
+
+    private void appliqueResultatStub(int[][] resultat, String libelle) {
+        if (resultat == null) {
+            System.out.println("La fonction " + libelle + " n'a pas retourne d'image.");
+            return;
+        }
+        appliqueFiltreGlobal(resultat);
+    }
+
     private void activeMenusNG()
     {
         jMenuDessiner.setEnabled(true);
         jMenuFourier.setEnabled(true);
         jMenuHistogramme.setEnabled(true);
+        jMenuContours.setEnabled(true);
+        jMenuSeuillage.setEnabled(true);
         jMenuFiltrageLineaire.setEnabled(true);
         jMenuTraitementNonLineaire.setEnabled(true);
     }
@@ -387,6 +719,8 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuDessiner.setEnabled(true);
         jMenuFourier.setEnabled(false);
         jMenuHistogramme.setEnabled(false);
+        jMenuContours.setEnabled(false);
+        jMenuSeuillage.setEnabled(false);
         jMenuFiltrageLineaire.setEnabled(false);
         jMenuTraitementNonLineaire.setEnabled(false);
     }
@@ -429,6 +763,22 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         int[][] matrice = getMatriceImageNG();
         if (matrice == null) return;
         appliqueFiltreGlobal(FiltrageLineaireGlobal.filtrePasseHautButterworth(matrice, frequenceCoupure, ordre));
+    }
+
+    private Double demandeDouble(String libelle, double minimum) {
+        while (true) {
+            String valeur = JOptionPane.showInputDialog(this, libelle + " :", minimum);
+            if (valeur == null) return null;
+
+            try {
+                double nombre = Double.parseDouble(valeur.trim());
+                if (nombre >= minimum) return nombre;
+            }
+            catch (NumberFormatException ignored) {
+            }
+
+            JOptionPane.showMessageDialog(this, libelle + " doit etre un nombre superieur ou egal a " + minimum + ".", "Valeur invalide", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private Integer demandeEntier(String libelle, int minimum) {
@@ -1066,6 +1416,9 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemDessinerRectangle;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemDessinerRectanglePlein;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenuContours;
+    private javax.swing.JMenu jMenuContoursLineaire;
+    private javax.swing.JMenu jMenuContoursNonLineaire;
     private javax.swing.JMenu jMenuDessiner;
     private javax.swing.JMenu jMenuFourier;
     private javax.swing.JMenu jMenuFourierAfficher;
@@ -1074,7 +1427,14 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JMenu jMenuFiltrageLineaireLocal;
     private javax.swing.JMenu jMenuHistogramme;
     private javax.swing.JMenuItem jMenuHistogrammeAfficher;
+    private javax.swing.JMenuItem jMenuHistogrammeParametres;
+    private javax.swing.JMenu jMenuHistogrammeRehaussement;
     private javax.swing.JMenu jMenuImage;
+    private javax.swing.JMenuItem jMenuItemHistogrammeEgalisation;
+    private javax.swing.JMenuItem jMenuItemHistogrammeGamma;
+    private javax.swing.JMenuItem jMenuItemHistogrammeLineaire;
+    private javax.swing.JMenuItem jMenuItemHistogrammeLineaireSaturation;
+    private javax.swing.JMenuItem jMenuItemHistogrammeNegatif;
     private javax.swing.JMenuItem jMenuItemMorphoDilatation;
     private javax.swing.JMenuItem jMenuItemMorphoDilatationGeodesique;
     private javax.swing.JMenuItem jMenuItemMorphoErosion;
@@ -1083,6 +1443,14 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JMenuItem jMenuItemMorphoOuverture;
     private javax.swing.JMenuItem jMenuItemMorphoReconstructionGeodesique;
     private javax.swing.JMenuItem jMenuItemCouleurPinceau;
+    private javax.swing.JMenuItem jMenuItemContoursGradientBeucher;
+    private javax.swing.JMenuItem jMenuItemContoursGradientDilatation;
+    private javax.swing.JMenuItem jMenuItemContoursGradientErosion;
+    private javax.swing.JMenuItem jMenuItemContoursGradientPrewitt;
+    private javax.swing.JMenuItem jMenuItemContoursGradientSobel;
+    private javax.swing.JMenuItem jMenuItemContoursLaplacien4;
+    private javax.swing.JMenuItem jMenuItemContoursLaplacien8;
+    private javax.swing.JMenuItem jMenuItemContoursLaplacienNonLineaire;
     private javax.swing.JMenuItem jMenuItemEnregistrerSous;
     private javax.swing.JMenuItem jMenuItemFiltrePasseBasButterworth;
     private javax.swing.JMenuItem jMenuItemFiltrePasseBasIdeal;
@@ -1103,6 +1471,10 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JMenu jMenuNouvelle;
     private javax.swing.JMenu jMenuOuvrir;
     private javax.swing.JMenuItem jMenuQuitter;
+    private javax.swing.JMenu jMenuSeuillage;
+    private javax.swing.JMenuItem jMenuItemSeuillageAutomatique;
+    private javax.swing.JMenuItem jMenuItemSeuillageDouble;
+    private javax.swing.JMenuItem jMenuItemSeuillageSimple;
     private javax.swing.JMenu jMenuTraitementNonLineaire;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JSeparator jSeparator1;

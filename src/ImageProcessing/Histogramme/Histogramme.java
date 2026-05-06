@@ -22,81 +22,21 @@ public class Histogramme
 
         System.out.println("Fonction minimum");
 
-        if (image == null || image.length == 0) return 0;
-
-        boolean trouve = false;
-        int min = 0;
-
-        for (int[] row : image)
-        {
-            if (row == null) continue;
-            for (int value : row)
-            {
-                if (!trouve)
-                {
-                    min = value;
-                    trouve = true;
-                }
-                else if (value < min)
-                {
-                    min = value;
-                }
-            }
-        }
-
-        return trouve ? min : 0;
+        return extremum(image, true);
     }
 
     public static int maximum(int[][] image) {
 
         System.out.println("Fonction maximum");
 
-        if (image == null || image.length == 0) return 0;
-
-        boolean trouve = false;
-        int max = 0;
-
-        for (int[] row : image)
-        {
-            if (row == null) continue;
-            for (int value : row)
-            {
-                if (!trouve)
-                {
-                    max = value;
-                    trouve = true;
-                }
-                else if (value > max)
-                {
-                    max = value;
-                }
-            }
-        }
-
-        return trouve ? max : 0;
+        return extremum(image, false);
     }
 
     public static int luminance(int[][] image) {
 
         System.out.println("Fonction luminance");
 
-        if (image == null || image.length == 0) return 0;
-
-        long somme = 0;
-        long nombrePixels = 0;
-
-        for (int[] row : image)
-        {
-            if (row == null) continue;
-            for (int value : row)
-            {
-                somme += value;
-                nombrePixels++;
-            }
-        }
-
-        if (nombrePixels == 0) return 0;
-        return (int) Math.round((double) somme / nombrePixels);
+        return (int) Math.round(averagePixelValue(image));
     }
 
     public static double contraste1(int[][] image) {
@@ -111,24 +51,7 @@ public class Histogramme
 
         System.out.println("Fonction contraste2");
 
-        if (image == null || image.length == 0) return 0;
-
-        long somme = 0;
-        long nombrePixels = 0;
-
-        for (int[] row : image)
-        {
-            if (row == null) continue;
-            for (int value : row)
-            {
-                somme += value;
-                nombrePixels++;
-            }
-        }
-
-        if (nombrePixels == 0) return 0;
-
-        double moyenne = (double) somme / nombrePixels;
+        double moyenne = averagePixelValue(image);
         double variance = 0;
 
         for (int[] row : image)
@@ -141,7 +64,7 @@ public class Histogramme
             }
         }
 
-        variance /= nombrePixels;
+        variance /= countPixel(image);
         return Math.sqrt(variance);
     }
 
@@ -256,5 +179,69 @@ public class Histogramme
     private static int limiterNiveauGris(int valeur)
     {
         return Math.max(0, Math.min(255, valeur));
+    }
+
+    private static int extremum(int[][] image, boolean chercherMin)
+    {
+        if (image == null || image.length == 0) return 0;
+
+        boolean trouve = false;
+        int extremum = 0;
+
+        for (int[] row : image)
+        {
+            if (row == null) continue;
+            for (int value : row)
+            {
+                if (!trouve)
+                {
+                    extremum = value;
+                    trouve = true;
+                }
+                else if ((chercherMin && (value < extremum)) || (!chercherMin && (value > extremum)))
+                {
+                    extremum = value;
+                }
+            }
+        }
+
+        return trouve ? extremum : 0;
+    }
+
+    private static double averagePixelValue(int[][] image)
+    {
+        if (image == null || image.length == 0) return 0;
+
+        long somme = 0;
+        long nombrePixels = 0;
+
+        for (int[] row : image)
+        {
+            if (row == null) continue;
+            for (int value : row)
+            {
+                somme += value;
+                nombrePixels++;
+            }
+        }
+
+        if (nombrePixels == 0) return 0;
+
+        return (double) somme / nombrePixels;
+    }
+
+    private static long countPixel(int[][] image)
+    {
+        if (image == null || image.length == 0) return 0;
+
+        long nombrePixels = 0;
+
+        for (int[] row : image)
+        {
+            if (row == null) continue;
+            nombrePixels += row.length;
+        }
+
+        return nombrePixels;
     }
 }

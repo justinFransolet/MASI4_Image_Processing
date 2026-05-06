@@ -4,16 +4,17 @@ public class Histogramme
 {
     public static int[] Histogramme256(int[][] mat)
     {
-        int M = mat.length;
-        int N = mat[0].length;
         int[] histo = new int[256];
-        
-        for(int i=0 ; i<256 ; i++) histo[i] = 0;
 
-        for (int[] ints : mat)
-            for (int j = 0; j < N; j++)
-                if ((ints[j] >= 0) && (ints[j] <= 255)) histo[ints[j]]++;
-        
+        if (mat == null) return histo;
+
+        for (int[] row : mat)
+        {
+            if (row == null) continue;
+            for (int value : row)
+                if ((value >= 0) && (value <= 255)) histo[value]++;
+        }
+
         return histo;
     }
 
@@ -21,89 +22,239 @@ public class Histogramme
 
         System.out.println("Fonction minimum");
 
-        //TODO (étape 3.1)
+        if (image == null || image.length == 0) return 0;
 
-        return 0;
+        boolean trouve = false;
+        int min = 0;
+
+        for (int[] row : image)
+        {
+            if (row == null) continue;
+            for (int value : row)
+            {
+                if (!trouve)
+                {
+                    min = value;
+                    trouve = true;
+                }
+                else if (value < min)
+                {
+                    min = value;
+                }
+            }
+        }
+
+        return trouve ? min : 0;
     }
 
     public static int maximum(int[][] image) {
 
         System.out.println("Fonction maximum");
 
-        //TODO (étape 3.2)
+        if (image == null || image.length == 0) return 0;
 
-        return 0;
+        boolean trouve = false;
+        int max = 0;
+
+        for (int[] row : image)
+        {
+            if (row == null) continue;
+            for (int value : row)
+            {
+                if (!trouve)
+                {
+                    max = value;
+                    trouve = true;
+                }
+                else if (value > max)
+                {
+                    max = value;
+                }
+            }
+        }
+
+        return trouve ? max : 0;
     }
 
     public static int luminance(int[][] image) {
 
         System.out.println("Fonction luminance");
 
-        //TODO (étape 3.3)
+        if (image == null || image.length == 0) return 0;
 
-        return 0;
+        long somme = 0;
+        long nombrePixels = 0;
+
+        for (int[] row : image)
+        {
+            if (row == null) continue;
+            for (int value : row)
+            {
+                somme += value;
+                nombrePixels++;
+            }
+        }
+
+        if (nombrePixels == 0) return 0;
+        return (int) Math.round((double) somme / nombrePixels);
     }
 
     public static double contraste1(int[][] image) {
 
         System.out.println("Fonction contraste1");
 
-        //TODO (étape 3.4)
-
-        return 0;
+        if (image == null || image.length == 0) return 0;
+        return maximum(image) - minimum(image);
     }
 
     public static double contraste2(int[][] image) {
 
         System.out.println("Fonction contraste2");
 
-        //TODO (étape 3.5)
+        if (image == null || image.length == 0) return 0;
 
-        return 0;
+        long somme = 0;
+        long nombrePixels = 0;
+
+        for (int[] row : image)
+        {
+            if (row == null) continue;
+            for (int value : row)
+            {
+                somme += value;
+                nombrePixels++;
+            }
+        }
+
+        if (nombrePixels == 0) return 0;
+
+        double moyenne = (double) somme / nombrePixels;
+        double variance = 0;
+
+        for (int[] row : image)
+        {
+            if (row == null) continue;
+            for (int value : row)
+            {
+                double ecart = value - moyenne;
+                variance += ecart * ecart;
+            }
+        }
+
+        variance /= nombrePixels;
+        return Math.sqrt(variance);
     }
 
     public static int[][] rehaussement(int[][] image, int[] courbeTonale) {
 
         System.out.println("Fonction rehaussement");
 
-        //TODO (étape 3.6)
+        if (image == null || courbeTonale == null || courbeTonale.length != 256 || image.length == 0)
+            return null;
 
-        return null;
+        int largeur = image.length;
+        int hauteur = image[0].length;
+        int[][] resultat = new int[largeur][hauteur];
+
+        for (int x = 0; x < largeur; x++)
+        {
+            if (image[x] == null) continue;
+            for (int y = 0; y < hauteur; y++)
+            {
+                int valeur = image[x][y];
+                if (valeur < 0) valeur = 0;
+                else if (valeur > 255) valeur = 255;
+                resultat[x][y] = limiterNiveauGris(courbeTonale[valeur]);
+            }
+        }
+
+        return resultat;
     }
 
     public static int[] creeCourbeTonaleLineaireSaturation(int smin, int smax) {
 
         System.out.println("Fonction creeCourbeTonaleLineaireSaturation");
 
-        //TODO (étape 3.7)
+        int[] courbe = new int[256];
 
-        return null;
+        if (smin > smax)
+        {
+            int tmp = smin;
+            smin = smax;
+            smax = tmp;
+        }
+
+        smin = Math.max(0, Math.min(255, smin));
+        smax = Math.max(0, Math.min(255, smax));
+
+        if (smin == smax)
+        {
+            for (int i = 0; i < 256; i++) courbe[i] = (i <= smin) ? 0 : 255;
+            return courbe;
+        }
+
+        for (int i = 0; i < 256; i++)
+        {
+            if (i <= smin) courbe[i] = 0;
+            else if (i >= smax) courbe[i] = 255;
+            else courbe[i] = limiterNiveauGris((int) Math.round(255.0 * (i - smin) / (smax - smin)));
+        }
+
+        return courbe;
     }
 
     public static int[] creeCourbeTonaleGamma(double gamma) {
 
         System.out.println("Fonction creeCourbeTonaleGamma");
 
-        //TODO (étape 3.8)
+        if (gamma <= 0) return null;
 
-        return null;
+        int[] courbe = new int[256];
+
+        for (int i = 0; i < 256; i++)
+        {
+            courbe[i] = limiterNiveauGris((int) Math.round(255.0 * Math.pow(i / 255.0, gamma)));
+        }
+
+        return courbe;
     }
 
     public static int[] creeCourbeTonaleNegatif() {
 
         System.out.println("Fonction creeCourbeTonaleNegatif");
 
-        //TODO (étape 3.9)
+        int[] courbe = new int[256];
 
-        return null;
+        for (int i = 0; i < 256; i++) courbe[i] = 255 - i;
+
+        return courbe;
     }
 
     public static int[] creeCourbeTonaleEgalisation(int[][] image) {
 
         System.out.println("Fonction creeCourbeTonaleEgalisation");
 
-        //TODO (étape 3.10)
+        if (image == null || image.length == 0) return null;
 
-        return null;
+        int[] histogramme = Histogramme256(image);
+        int totalPixels = 0;
+        for (int valeur : histogramme) totalPixels += valeur;
+        if (totalPixels == 0) return null;
+
+        int[] courbe = new int[256];
+        long cumul = 0;
+
+        for (int i = 0; i < 256; i++)
+        {
+            cumul += histogramme[i];
+            courbe[i] = limiterNiveauGris((int) Math.round(255.0 * cumul / totalPixels));
+        }
+
+        return courbe;
+    }
+
+    private static int limiterNiveauGris(int valeur)
+    {
+        return Math.max(0, Math.min(255, valeur));
     }
 }

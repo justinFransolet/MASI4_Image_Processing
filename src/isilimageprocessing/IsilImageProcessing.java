@@ -690,7 +690,11 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
 
     private Integer demandeDirectionContour() {
         Object[] choix = {"Horizontale", "Verticale"};
-        int reponse = JOptionPane.showOptionDialog(this, "Direction du gradient :", "Direction", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, choix, choix[0]);
+        Object message = new Object[] {
+                "Direction du gradient :",
+                "Valeur conseillee : Horizontale"
+        };
+        int reponse = JOptionPane.showOptionDialog(this, message, "Direction", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, choix, choix[0]);
         if (reponse == JOptionPane.CLOSED_OPTION) return null;
         return reponse == 0 ? 1 : 2;
     }
@@ -767,7 +771,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
 
     private Double demandeDouble(String libelle, double minimum) {
         while (true) {
-            String valeur = JOptionPane.showInputDialog(this, libelle + " :", minimum);
+            String valeur = JOptionPane.showInputDialog(this, messageSaisie(libelle, String.valueOf(conseilDouble(libelle, minimum))), minimum);
             if (valeur == null) return null;
 
             try {
@@ -783,7 +787,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
 
     private Integer demandeEntier(String libelle, int minimum) {
         while (true) {
-            String valeur = JOptionPane.showInputDialog(this, libelle + " :", minimum);
+            String valeur = JOptionPane.showInputDialog(this, messageSaisie(libelle, String.valueOf(conseilEntier(libelle, minimum))), minimum);
             if (valeur == null) return null;
 
             try {
@@ -805,6 +809,41 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
 
             JOptionPane.showMessageDialog(this, "La taille du masque doit etre impaire.", "Valeur invalide", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private Object[] messageSaisie(String libelle, String valeurConseillee) {
+        return new Object[] {
+                libelle + " :",
+                "Valeur conseillee : " + valeurConseillee
+        };
+    }
+
+    private double conseilDouble(String libelle, double minimum) {
+        if ("Gamma".equalsIgnoreCase(libelle)) return 0.5;
+        return minimum;
+    }
+
+    private int conseilEntier(String libelle, int minimum) {
+        String libelleNormalise = libelle.toLowerCase();
+
+        if (libelleNormalise.contains("coupure")) return frequenceCoupureConseillee();
+        if (libelleNormalise.contains("taille du masque")) return 5;
+        if (libelleNormalise.contains("ordre")) return 2;
+        if (libelleNormalise.contains("nombre d'iterations")) return 5;
+        if ("seuil".equals(libelleNormalise)) return 128;
+        if ("seuil 1".equals(libelleNormalise)) return 80;
+        if ("seuil 2".equals(libelleNormalise)) return 180;
+        if ("smin".equals(libelleNormalise)) return 30;
+        if ("smax".equals(libelleNormalise)) return 220;
+
+        return minimum;
+    }
+
+    private int frequenceCoupureConseillee() {
+        int[][] matrice = getMatriceImageNG();
+        if (matrice == null || matrice.length == 0 || matrice[0].length == 0) return 30;
+        int petiteDimension = Math.min(matrice.length, matrice[0].length);
+        return Math.max(1, petiteDimension / 8);
     }
 
     private void appliqueFiltreGlobal(int[][] matrice) {
@@ -916,7 +955,11 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private void jMenuItemFiltreMasqueConvolutionActionPerformed(java.awt.event.ActionEvent evt) {
         System.out.println("Filtrage linéaire > Local > Masque de convolution");
         JTextArea textArea = new JTextArea("0 -1 0\n-1 5 -1\n0 -1 0", 6, 24);
-        int choix = JOptionPane.showConfirmDialog(this, new JScrollPane(textArea), "Masque de convolution", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        Object[] message = {
+                "Valeur conseillee : masque de nettete 3x3",
+                new JScrollPane(textArea)
+        };
+        int choix = JOptionPane.showConfirmDialog(this, message, "Masque de convolution", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (choix != JOptionPane.OK_OPTION) return;
 
         int[][] matrice = getMatriceImageNG();

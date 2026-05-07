@@ -68,43 +68,40 @@ public class Histogramme
     }
 
     /**
-     * Computes a simple contrast defined as {@code maximum(image) - minimum(image)}.
-     *
-     * @param image grayscale image
-     * @return difference between the maximum and minimum values; returns
-     *         {@code 0} if the image is null or empty
-     */
-    public static double contraste1(int[][] image) {
-        if (image == null || image.length == 0) return 0;
-        return maximum(image) - minimum(image);
-    }
-
-    /**
      * Computes a standard-deviation-based contrast on grayscale values.
      *
      * @param image grayscale image
      * @return pixel standard deviation; returns {@code 0} if the image is null,
      *         empty, or contains no usable pixel
      */
-    public static double contraste2(int[][] image) {
-        double moyenne = ImageTools.averagePixelValue(image);
-        double variance = 0;
+    public static double contraste1(int[][] image) {
+        int M = image.length;
+        int N = image[0].length;
+        int L = luminance(image);
+        double somme = 0;
 
-        for (int[] row : image)
-        {
-            if (row == null) continue;
-            for (int value : row)
-            {
-                double ecart = value - moyenne;
-                variance += ecart * ecart;
+        for (int[] row : image) {
+            for (int pixel : row) {
+                double diff = pixel - L;
+                somme += diff * diff;
             }
         }
 
-        long nombrePixels = ImageTools.countPixel(image);
-        if (nombrePixels == 0) return 0;
+        return Math.sqrt(somme * ( 1.0 / (M * N)));
+    }
 
-        variance /= nombrePixels;
-        return Math.sqrt(variance);
+    /**
+     * Computes a simple contrast defined as {@code maximum(image) - minimum(image)}.
+     *
+     * @param image grayscale image
+     * @return difference between the maximum and minimum values; returns
+     *         {@code 0} if the image is null or empty
+     */
+    public static double contraste2(int[][] image) {
+        if (image == null || image.length == 0) return 0;
+        double max = maximum(image);
+        double min = minimum(image);
+        return (max - min) / (max + min);
     }
 
     /**

@@ -81,6 +81,7 @@ public class Histogramme
         double somme = 0;
 
         for (int[] row : image) {
+            if (row == null) continue;
             for (int pixel : row) {
                 double diff = pixel - L;
                 somme += diff * diff;
@@ -148,28 +149,18 @@ public class Histogramme
      * @return tone curve of 256 values
      */
     public static int[] creeCourbeTonaleLineaireSaturation(int smin, int smax) {
-        int[] courbe = new int[256];
-
-        if (smin > smax)
-        {
-            int tmp = smin;
-            smin = smax;
-            smax = tmp;
-        }
-
         smin = Math.max(0, Math.min(255, smin));
         smax = Math.max(0, Math.min(255, smax));
+        int[] courbe = new int[256];
 
-        if (smin == smax)
-        {
-            for (int i = 0; i < 256; i++) courbe[i] = (i <= smin) ? 0 : 255;
-            return courbe;
-        }
+        if (smin > smax) throw new IllegalArgumentException("smin > smax");
+
+        if (smin == smax) { for (int i = 0; i < 256; i++) courbe[i] = (i <= smin) ? 0 : 255; return courbe; }
 
         for (int i = 0; i < 256; i++)
         {
-            if (i <= smin) courbe[i] = 0;
-            else if (i >= smax) courbe[i] = 255;
+            if (i < smin) courbe[i] = 0;
+            else if (i > smax) courbe[i] = 255;
             else courbe[i] = ImageTools.limiterNiveauGris((int) Math.round(255.0 * (i - smin) / (smax - smin)));
         }
 
@@ -189,7 +180,7 @@ public class Histogramme
 
         for (int i = 0; i < 256; i++)
         {
-            courbe[i] = ImageTools.limiterNiveauGris((int) Math.round(255.0 * Math.pow(i / 255.0, gamma)));
+            courbe[i] = ImageTools.limiterNiveauGris((int) (255.0 * Math.pow(i / 255.0, 1 / gamma)));
         }
 
         return courbe;

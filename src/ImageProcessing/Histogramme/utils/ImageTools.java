@@ -74,25 +74,4 @@ public class ImageTools {
 
         return (double) somme / nombrePixels;
     }
-
-    /**
-     * Count the number of pixels into an image.
-     *
-     * @param image source grayscale image
-     * @return the number of pixels into an image; returns {@code 0} if the image is null or empty
-     */
-    public static long countPixel(int[][] image)
-    {
-        if (image == null || image.length == 0) return 0;
-
-        long nombrePixels = 0;
-
-        for (int[] row : image)
-        {
-            if (row == null) continue;
-            nombrePixels += row.length;
-        }
-
-        return nombrePixels;
-    }
 }

@@ -501,8 +501,8 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         int minimum = Histogramme.minimum(matrice);
         int maximum = Histogramme.maximum(matrice);
         int luminance = Histogramme.luminance(matrice);
-        double contraste1 = Histogramme.contraste1(matrice);
-        double contraste2 = Histogramme.contraste2(matrice);
+        double contraste1 = Histogramme.simpleContrast(matrice);
+        double contraste2 = Histogramme.standardDeviationContrast(matrice);
 
         JOptionPane.showMessageDialog(this,
                 "Minimum : " + minimum + "\n"
@@ -521,7 +521,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
 
         int minimum = Histogramme.minimum(matrice);
         int maximum = Histogramme.maximum(matrice);
-        int[] courbeTonale = Histogramme.creeCourbeTonaleLineaireSaturation(minimum, maximum);
+        int[] courbeTonale = Histogramme.linearSaturationToneCurve(minimum, maximum);
         appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "lineaire");
     }
 
@@ -535,7 +535,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         int[][] matrice = getMatriceImageNG();
         if (matrice == null) return;
 
-        int[] courbeTonale = Histogramme.creeCourbeTonaleLineaireSaturation(smin, smax);
+        int[] courbeTonale = Histogramme.linearSaturationToneCurve(smin, smax);
         appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "lineaire avec saturation");
     }
 
@@ -547,7 +547,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         int[][] matrice = getMatriceImageNG();
         if (matrice == null) return;
 
-        int[] courbeTonale = Histogramme.creeCourbeTonaleGamma(gamma);
+        int[] courbeTonale = Histogramme.gammaTonalCurve(gamma);
         appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "gamma");
     }
 
@@ -556,7 +556,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         int[][] matrice = getMatriceImageNG();
         if (matrice == null) return;
 
-        int[] courbeTonale = Histogramme.creeCourbeTonaleEgalisation(matrice);
+        int[] courbeTonale = Histogramme.toneCurveEqualization(matrice);
         appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "egalisation");
     }
 
@@ -565,7 +565,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         int[][] matrice = getMatriceImageNG();
         if (matrice == null) return;
 
-        int[] courbeTonale = Histogramme.creeCourbeTonaleNegatif();
+        int[] courbeTonale = Histogramme.negativeTonalCurve();
         appelleRehaussementAvecHistogrammes(matrice, courbeTonale, "negatif");
     }
 
@@ -573,7 +573,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         int[] histogrammeAvant = Histogramme.Histogramme256(matrice);
         afficheHistogramme(histogrammeAvant, "Histogramme avant rehaussement " + libelle);
 
-        int[][] imageRehaussee = Histogramme.rehaussement(matrice, courbeTonale);
+        int[][] imageRehaussee = Histogramme.enhancement(matrice, courbeTonale);
         if (imageRehaussee == null) {
             System.out.println("Le rehaussement " + libelle + " n'a pas retourne d'image.");
             return;

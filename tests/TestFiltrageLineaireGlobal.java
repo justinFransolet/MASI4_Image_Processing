@@ -1,5 +1,3 @@
-package Tests;
-
 import ImageProcessing.Lineaire.FiltrageLineaireGlobal;
 
 public class TestFiltrageLineaireGlobal {

@@ -1,5 +1,7 @@
 package ImageProcessing.Histogramme;
 
+import ImageProcessing.Histogramme.utils.ImageTools;
+
 /**
  * Histogram-processing utilities for grayscale images.
  *
@@ -39,7 +41,7 @@ public class Histogramme
      *         or contains no usable pixel
      */
     public static int minimum(int[][] image) {
-        return extremum(image, true);
+        return ImageTools.extremum(image, true);
     }
 
     /**
@@ -50,7 +52,7 @@ public class Histogramme
      *         or contains no usable pixel
      */
     public static int maximum(int[][] image) {
-        return extremum(image, false);
+        return ImageTools.extremum(image, false);
     }
 
     /**
@@ -62,7 +64,7 @@ public class Histogramme
      *         usable pixel
      */
     public static int luminance(int[][] image) {
-        return (int) Math.round(averagePixelValue(image));
+        return (int) Math.round(ImageTools.averagePixelValue(image));
     }
 
     /**
@@ -85,7 +87,7 @@ public class Histogramme
      *         empty, or contains no usable pixel
      */
     public static double contraste2(int[][] image) {
-        double moyenne = averagePixelValue(image);
+        double moyenne = ImageTools.averagePixelValue(image);
         double variance = 0;
 
         for (int[] row : image)
@@ -98,7 +100,7 @@ public class Histogramme
             }
         }
 
-        long nombrePixels = countPixel(image);
+        long nombrePixels = ImageTools.countPixel(image);
         if (nombrePixels == 0) return 0;
 
         variance /= nombrePixels;
@@ -130,7 +132,7 @@ public class Histogramme
                 int valeur = image[x][y];
                 if (valeur < 0) valeur = 0;
                 else if (valeur > 255) valeur = 255;
-                resultat[x][y] = limiterNiveauGris(courbeTonale[valeur]);
+                resultat[x][y] = ImageTools.limiterNiveauGris(courbeTonale[valeur]);
             }
         }
 
@@ -171,7 +173,7 @@ public class Histogramme
         {
             if (i <= smin) courbe[i] = 0;
             else if (i >= smax) courbe[i] = 255;
-            else courbe[i] = limiterNiveauGris((int) Math.round(255.0 * (i - smin) / (smax - smin)));
+            else courbe[i] = ImageTools.limiterNiveauGris((int) Math.round(255.0 * (i - smin) / (smax - smin)));
         }
 
         return courbe;
@@ -190,7 +192,7 @@ public class Histogramme
 
         for (int i = 0; i < 256; i++)
         {
-            courbe[i] = limiterNiveauGris((int) Math.round(255.0 * Math.pow(i / 255.0, gamma)));
+            courbe[i] = ImageTools.limiterNiveauGris((int) Math.round(255.0 * Math.pow(i / 255.0, gamma)));
         }
 
         return courbe;
@@ -231,104 +233,9 @@ public class Histogramme
         for (int i = 0; i < 256; i++)
         {
             cumul += histogramme[i];
-            courbe[i] = limiterNiveauGris((int) Math.round(255.0 * cumul / totalPixels));
+            courbe[i] = ImageTools.limiterNiveauGris((int) Math.round(255.0 * cumul / totalPixels));
         }
 
         return courbe;
-    }
-
-    /**
-     * Clamps a value to the {@code [0..255]} interval.
-     *
-     * @param valeur value to clamp
-     * @return value forced into the grayscale range
-     */
-    private static int limiterNiveauGris(int valeur)
-    {
-        return Math.max(0, Math.min(255, valeur));
-    }
-
-    /**
-     * Search the extremum value into an image.
-     *
-     * @param image source grayscale image
-     * @param chercherMin True for searching minus and False for maximum
-     *
-     * @return the extremum value found into the pixel image
-     */
-    private static int extremum(int[][] image, boolean chercherMin)
-    {
-        if (image == null || image.length == 0) return 0;
-
-        boolean trouve = false;
-        int extremum = 0;
-
-        for (int[] row : image)
-        {
-            if (row == null) continue;
-            for (int value : row)
-            {
-                if (!trouve)
-                {
-                    extremum = value;
-                    trouve = true;
-                }
-                else if ((chercherMin && (value < extremum)) || (!chercherMin && (value > extremum)))
-                {
-                    extremum = value;
-                }
-            }
-        }
-
-        return trouve ? extremum : 0;
-    }
-
-    /**
-     * Get the average value for pixel into an image.
-     *
-     * @param image source grayscale image
-     * @return the average value for pixel into an image; returns {@code 0} if the image is null,
-     */
-    private static double averagePixelValue(int[][] image)
-    {
-        if (image == null || image.length == 0) return 0;
-
-        long somme = 0;
-        long nombrePixels = 0;
-
-        for (int[] row : image)
-        {
-            if (row == null) continue;
-            for (int value : row)
-            {
-                somme += value;
-                nombrePixels++;
-            }
-        }
-
-        if (nombrePixels == 0) return 0;
-
-        return (double) somme / nombrePixels;
-    }
-
-    /**
-     * Count the number of pixels into an image.
-     *
-     * @param image source grayscale image
-     * @return the number of pixels into an image; returns {@code 0} if the image is null or empty
-     */
-    private static long countPixel(int[][] image)
-    {
-        if (image == null || image.length == 0) return 0;
-
-        long nombrePixels = 0;
-
-        for (int[] row : image)
-        {
-            if (row == null) continue;
-            nombrePixels += row.length;
-        }
-
-        return nombrePixels;
     }
 }

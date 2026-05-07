@@ -74,7 +74,7 @@ public class Histogramme
      * @return difference between the maximum and minimum values; returns
      *         {@code 0} if the image is null or empty
      */
-    public static double simpleContrast(int[][] image) {
+    public static double contraste1(int[][] image) {
         if (image == null || image.length == 0) return 0;
         return maximum(image) - minimum(image);
     }
@@ -86,7 +86,7 @@ public class Histogramme
      * @return pixel standard deviation; returns {@code 0} if the image is null,
      *         empty, or contains no usable pixel
      */
-    public static double standardDeviationContrast(int[][] image) {
+    public static double contraste2(int[][] image) {
         double moyenne = ImageTools.averagePixelValue(image);
         double variance = 0;
 
@@ -116,7 +116,7 @@ public class Histogramme
      * @return transformed image; returns {@code null} if the image is null,
      *         empty, or if the tone curve is invalid
      */
-    public static int[][] enhancement(int[][] image, int[] courbeTonale) {
+    public static int[][] rehaussement(int[][] image, int[] courbeTonale) {
         if (image == null || courbeTonale == null || courbeTonale.length != 256 || image.length == 0)
             return null;
 
@@ -150,7 +150,7 @@ public class Histogramme
      * @param smax upper saturation threshold
      * @return tone curve of 256 values
      */
-    public static int[] linearSaturationToneCurve(int smin, int smax) {
+    public static int[] creeCourbeTonaleLineaireSaturation(int smin, int smax) {
         int[] courbe = new int[256];
 
         if (smin > smax)
@@ -185,7 +185,7 @@ public class Histogramme
      * @param gamma gamma exponent; must be strictly positive
      * @return tone curve of 256 values, or {@code null} if {@code gamma <= 0}
      */
-    public static int[] gammaTonalCurve(double gamma) {
+    public static int[] creeCourbeTonaleGamma(double gamma) {
         if (gamma <= 0) return null;
 
         int[] courbe = new int[256];
@@ -204,7 +204,7 @@ public class Histogramme
      * @return tone curve of 256 values where {@code i} is mapped to
      *         {@code 255 - i}
      */
-    public static int[] negativeTonalCurve() {
+    public static int[] creeCourbeTonaleNegatif() {
         int[] courbe = new int[256];
 
         for (int i = 0; i < 256; i++) courbe[i] = 255 - i;
@@ -219,7 +219,7 @@ public class Histogramme
      * @return tone curve of 256 values, or {@code null} if the image is null,
      *         empty, or contains no usable pixel
      */
-    public static int[] toneCurveEqualization(int[][] image) {
+    public static int[] creeCourbeTonaleEgalisation(int[][] image) {
         if (image == null || image.length == 0) return null;
 
         int[] histogramme = Histogramme256(image);

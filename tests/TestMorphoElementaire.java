@@ -1,5 +1,3 @@
-package Tests;
-
 import ImageProcessing.NonLineaire.MorphoElementaire;
 
 public class TestMorphoElementaire {

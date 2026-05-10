@@ -1,109 +1,229 @@
 package ImageProcessing.Histogramme;
 
-public class Histogramme 
+import ImageProcessing.Histogramme.utils.ImageTools;
+
+/**
+ * Histogram-processing utilities for grayscale images.
+ *
+ * <p>The methods in this class are static and operate on images represented as
+ * integer matrices {@code int[][]}.</p>
+ */
+public class Histogramme
 {
+    /**
+     * Computes the 256-level grayscale histogram of an image.
+     *
+     * @param mat grayscale image; values outside {@code [0..255]} are ignored
+     * @return an array of 256 entries containing the occurrence count of each
+     *         grayscale level; returns an empty histogram if the image is null
+     */
     public static int[] Histogramme256(int[][] mat)
     {
-        int M = mat.length;
-        int N = mat[0].length;
         int[] histo = new int[256];
-        
-        for(int i=0 ; i<256 ; i++) histo[i] = 0;
 
-        for (int[] ints : mat)
-            for (int j = 0; j < N; j++)
-                if ((ints[j] >= 0) && (ints[j] <= 255)) histo[ints[j]]++;
-        
+        if (mat == null) return histo;
+
+        for (int[] row : mat)
+        {
+            if (row == null) continue;
+            for (int value : row)
+                if ((value >= 0) && (value <= 255)) histo[value]++;
+        }
+
         return histo;
     }
 
+    /**
+     * Determines the smallest grayscale value present in the image.
+     *
+     * @param image grayscale image
+     * @return the minimum value found, or {@code 0} if the image is null, empty,
+     *         or contains no usable pixel
+     */
     public static int minimum(int[][] image) {
-
-        System.out.println("Fonction minimum");
-
-        //TODO (étape 3.1)
-
-        return 0;
+        return ImageTools.extremum(image, true);
     }
 
+    /**
+     * Determines the largest grayscale value present in the image.
+     *
+     * @param image grayscale image
+     * @return the maximum value found, or {@code 0} if the image is null, empty,
+     *         or contains no usable pixel
+     */
     public static int maximum(int[][] image) {
-
-        System.out.println("Fonction maximum");
-
-        //TODO (étape 3.2)
-
-        return 0;
+        return ImageTools.extremum(image, false);
     }
 
+    /**
+     * Computes the average luminance of the image.
+     *
+     * @param image grayscale image
+     * @return the arithmetic mean of the pixels, rounded to the nearest integer;
+     *         returns {@code 0} if the image is null, empty, or contains no
+     *         usable pixel
+     */
     public static int luminance(int[][] image) {
-
-        System.out.println("Fonction luminance");
-
-        //TODO (étape 3.3)
-
-        return 0;
+        return (int) Math.round(ImageTools.averagePixelValue(image));
     }
 
+    /**
+     * Computes a standard-deviation-based contrast on grayscale values.
+     *
+     * @param image grayscale image
+     * @return pixel standard deviation; returns {@code 0} if the image is null,
+     *         empty, or contains no usable pixel
+     */
     public static double contraste1(int[][] image) {
+        int M = image.length;
+        int N = image[0].length;
+        int L = luminance(image);
+        double somme = 0;
 
-        System.out.println("Fonction contraste1");
+        for (int[] row : image) {
+            if (row == null) continue;
+            for (int pixel : row) {
+                double diff = pixel - L;
+                somme += diff * diff;
+            }
+        }
 
-        //TODO (étape 3.4)
-
-        return 0;
+        return Math.sqrt(somme * ( 1.0 / (M * N)));
     }
 
+    /**
+     * Computes a simple contrast defined as {@code maximum(image) - minimum(image)}.
+     *
+     * @param image grayscale image
+     * @return difference between the maximum and minimum values; returns
+     *         {@code 0} if the image is null or empty
+     */
     public static double contraste2(int[][] image) {
-
-        System.out.println("Fonction contraste2");
-
-        //TODO (étape 3.5)
-
-        return 0;
+        if (image == null || image.length == 0) return 0;
+        double max = maximum(image);
+        double min = minimum(image);
+        return (max - min) / (max + min);
     }
 
+    /**
+     * Applies a tone curve to the image to perform enhancement.
+     *
+     * @param image source grayscale image
+     * @param courbeTonale lookup table of 256 values, indexed by input grayscale
+     *                     level
+     * @return transformed image; returns {@code null} if the image is null,
+     *         empty, or if the tone curve is invalid
+     */
     public static int[][] rehaussement(int[][] image, int[] courbeTonale) {
+        if (image == null || courbeTonale == null || courbeTonale.length != 256 || image.length == 0)
+            return null;
 
-        System.out.println("Fonction rehaussement");
+        int largeur = image.length;
+        int hauteur = image[0].length;
+        int[][] resultat = new int[largeur][hauteur];
 
-        //TODO (étape 3.6)
+        for (int x = 0; x < largeur; x++)
+        {
+            if (image[x] == null) continue;
+            for (int y = 0; y < hauteur; y++)
+            {
+                int valeur = image[x][y];
+                if (valeur < 0) valeur = 0;
+                else if (valeur > 255) valeur = 255;
+                resultat[x][y] = ImageTools.limiterNiveauGris(courbeTonale[valeur]);
+            }
+        }
 
-        return null;
+        return resultat;
     }
 
+    /**
+     * Builds a linear tone curve with saturation.
+     *
+     * <p>Values less than or equal to {@code smin} are mapped to 0, values
+     * greater than or equal to {@code smax} are mapped to 255, and intermediate
+     * values are linearly interpolated.</p>
+     *
+     * @param smin lower saturation threshold
+     * @param smax upper saturation threshold
+     * @return tone curve of 256 values
+     */
     public static int[] creeCourbeTonaleLineaireSaturation(int smin, int smax) {
+        smin = Math.max(0, Math.min(255, smin));
+        smax = Math.max(0, Math.min(255, smax));
+        int[] courbe = new int[256];
 
-        System.out.println("Fonction creeCourbeTonaleLineaireSaturation");
+        if (smin > smax) throw new IllegalArgumentException("smin > smax");
 
-        //TODO (étape 3.7)
+        if (smin == smax) { for (int i = 0; i < 256; i++) courbe[i] = (i <= smin) ? 0 : 255; return courbe; }
 
-        return null;
+        for (int i = 0; i < 256; i++)
+        {
+            if (i < smin) courbe[i] = 0;
+            else if (i > smax) courbe[i] = 255;
+            else courbe[i] = ImageTools.limiterNiveauGris((int) Math.round(255.0 * (i - smin) / (smax - smin)));
+        }
+
+        return courbe;
     }
 
+    /**
+     * Builds a gamma correction tone curve.
+     *
+     * @param gamma gamma exponent; must be strictly positive
+     * @return tone curve of 256 values, or {@code null} if {@code gamma <= 0}
+     */
     public static int[] creeCourbeTonaleGamma(double gamma) {
+        if (gamma <= 0) return null;
 
-        System.out.println("Fonction creeCourbeTonaleGamma");
+        int[] courbe = new int[256];
 
-        //TODO (étape 3.8)
+        for (int i = 0; i < 256; i++)
+        {
+            courbe[i] = ImageTools.limiterNiveauGris((int) (255.0 * Math.pow(i / 255.0, 1 / gamma)));
+        }
 
-        return null;
+        return courbe;
     }
 
+    /**
+     * Builds the negative tone curve.
+     *
+     * @return tone curve of 256 values where {@code i} is mapped to
+     *         {@code 255 - i}
+     */
     public static int[] creeCourbeTonaleNegatif() {
+        int[] courbe = new int[256];
 
-        System.out.println("Fonction creeCourbeTonaleNegatif");
+        for (int i = 0; i < 256; i++) courbe[i] = 255 - i;
 
-        //TODO (étape 3.9)
-
-        return null;
+        return courbe;
     }
 
+    /**
+     * Builds a tone curve for histogram equalization.
+     *
+     * @param image source grayscale image
+     * @return tone curve of 256 values, or {@code null} if the image is null,
+     *         empty, or contains no usable pixel
+     */
     public static int[] creeCourbeTonaleEgalisation(int[][] image) {
+        if (image == null || image.length == 0) return null;
 
-        System.out.println("Fonction creeCourbeTonaleEgalisation");
+        int[] histogramme = Histogramme256(image);
+        int totalPixels = 0;
+        for (int valeur : histogramme) totalPixels += valeur;
+        if (totalPixels == 0) return null;
 
-        //TODO (étape 3.10)
+        int[] courbe = new int[256];
+        long cumul = 0;
 
-        return null;
+        for (int i = 0; i < 256; i++)
+        {
+            cumul += histogramme[i];
+            courbe[i] = ImageTools.limiterNiveauGris((int) Math.round(255.0 * cumul / totalPixels));
+        }
+
+        return courbe;
     }
 }

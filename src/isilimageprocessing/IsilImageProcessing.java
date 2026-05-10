@@ -577,6 +577,8 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         if (imageRehaussee == null) {
             System.out.println("Le rehaussement " + libelle + " n'a pas retourne d'image.");
             return;
+        } else {
+            appliqueFiltreGlobal(imageRehaussee);
         }
 
         int[] histogrammeApres = Histogramme.Histogramme256(imageRehaussee);

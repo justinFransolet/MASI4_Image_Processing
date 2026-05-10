@@ -4,6 +4,7 @@ import CImage.*;
 import CImage.Exceptions.*;
 import CImage.Observers.*;
 import CImage.Observers.Events.*;
+import ImageProcessing.Applications.Applications;
 import ImageProcessing.Complexe.MatriceComplexe;
 import ImageProcessing.Contours.ContoursLineaire;
 import ImageProcessing.Contours.ContoursNonLineaire;
@@ -145,6 +146,14 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuItemMorphoDilatationGeodesique = new javax.swing.JMenuItem();
         jMenuItemMorphoReconstructionGeodesique = new javax.swing.JMenuItem();
         jMenuItemMorphoFiltreMedian = new javax.swing.JMenuItem();
+        jMenuApplications = new javax.swing.JMenu();
+        jMenuItemApplication1 = new javax.swing.JMenuItem();
+        jMenuItemApplication2 = new javax.swing.JMenuItem();
+        jMenuItemApplication3 = new javax.swing.JMenuItem();
+        jMenuItemApplication4 = new javax.swing.JMenuItem();
+        jMenuItemApplication5 = new javax.swing.JMenuItem();
+        jMenuItemApplication6 = new javax.swing.JMenuItem();
+        jMenuItemApplication7 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Isil Image Processing");
@@ -436,6 +445,39 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuTraitementNonLineaire.add(jMenuMorphoComplexe);
 
         jMenuBar1.add(jMenuTraitementNonLineaire);
+
+        jMenuApplications.setText("Applications");
+        ajouteTraceMenu(jMenuApplications, "Applications");
+
+        jMenuItemApplication1.setText("1 - Reduction du bruit");
+        jMenuItemApplication1.addActionListener(this::jMenuItemApplication1ActionPerformed);
+        jMenuApplications.add(jMenuItemApplication1);
+
+        jMenuItemApplication2.setText("2 - Egalisation Lena RGB");
+        jMenuItemApplication2.addActionListener(this::jMenuItemApplication2ActionPerformed);
+        jMenuApplications.add(jMenuItemApplication2);
+
+        jMenuItemApplication3.setText("3 - Pois bleus et rouges");
+        jMenuItemApplication3.addActionListener(this::jMenuItemApplication3ActionPerformed);
+        jMenuApplications.add(jMenuItemApplication3);
+
+        jMenuItemApplication4.setText("4 - Balanes grandes/petites");
+        jMenuItemApplication4.addActionListener(this::jMenuItemApplication4ActionPerformed);
+        jMenuApplications.add(jMenuItemApplication4);
+
+        jMenuItemApplication5.setText("5 - Segmentation outils");
+        jMenuItemApplication5.addActionListener(this::jMenuItemApplication5ActionPerformed);
+        jMenuApplications.add(jMenuItemApplication5);
+
+        jMenuItemApplication6.setText("6 - Synthese vaisseau");
+        jMenuItemApplication6.addActionListener(this::jMenuItemApplication6ActionPerformed);
+        jMenuApplications.add(jMenuItemApplication6);
+
+        jMenuItemApplication7.setText("7 - Contours tartines");
+        jMenuItemApplication7.addActionListener(this::jMenuItemApplication7ActionPerformed);
+        jMenuApplications.add(jMenuItemApplication7);
+
+        jMenuBar1.add(jMenuApplications);
 
         setJMenuBar(jMenuBar1);
 
@@ -1047,6 +1089,122 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
             }
         });
     }
+
+    private void jMenuItemApplication1ActionPerformed(java.awt.event.ActionEvent evt) {
+        lanceApplication("Application 1 - Reduction du bruit", 1);
+    }
+
+    private void jMenuItemApplication2ActionPerformed(java.awt.event.ActionEvent evt) {
+        lanceApplication("Application 2 - Egalisation Lena", 2);
+    }
+
+    private void jMenuItemApplication3ActionPerformed(java.awt.event.ActionEvent evt) {
+        lanceApplication("Application 3 - Petits pois", 3);
+    }
+
+    private void jMenuItemApplication4ActionPerformed(java.awt.event.ActionEvent evt) {
+        lanceApplication("Application 4 - Balanes", 4);
+    }
+
+    private void jMenuItemApplication5ActionPerformed(java.awt.event.ActionEvent evt) {
+        lanceApplication("Application 5 - Outils", 5);
+    }
+
+    private void jMenuItemApplication6ActionPerformed(java.awt.event.ActionEvent evt) {
+        lanceApplication("Application 6 - Synthese", 6);
+    }
+
+    private void jMenuItemApplication7ActionPerformed(java.awt.event.ActionEvent evt) {
+        lanceApplication("Application 7 - Tartines", 7);
+    }
+
+    private void lanceApplication(String titre, int numero) {
+        System.out.println(titre);
+        try {
+            File datasets = new File("datasets");
+            File sortie = new File(".");
+            Applications.Resultat[] resultats;
+
+            switch (numero) {
+                case 1:
+                    resultats = Applications.exercice1(datasets);
+                    break;
+                case 2:
+                    resultats = Applications.exercice2(datasets);
+                    break;
+                case 3:
+                    resultats = Applications.exercice3(datasets);
+                    break;
+                case 4:
+                    resultats = Applications.exercice4(datasets);
+                    break;
+                case 5:
+                    resultats = Applications.exercice5(datasets);
+                    break;
+                case 6:
+                    resultats = Applications.exercice6(datasets, sortie);
+                    break;
+                case 7:
+                    resultats = Applications.exercice7(datasets);
+                    break;
+                default:
+                    return;
+            }
+
+            afficheResultatsApplications(titre, resultats);
+        }
+        catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erreur pendant " + titre + " : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    private void afficheResultatsApplications(String titre, Applications.Resultat[] resultats) {
+        if (resultats == null || resultats.length == 0) return;
+
+        appliqueResultatApplication(premierResultatPrincipal(resultats));
+
+        JFrame frame = new JFrame(titre);
+        JPanel panel = new JPanel(new GridLayout(0, Math.min(2, resultats.length), 8, 8));
+        panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        for (Applications.Resultat resultat : resultats) {
+            JPanel bloc = new JPanel(new BorderLayout(0, 4));
+            JLabel titreResultat = new JLabel(resultat.titre, SwingConstants.CENTER);
+            JLabel image = new JLabel(new ImageIcon(resultat.estRGB() ? resultat.imageRGB.getImage() : resultat.imageNG.getImage()));
+            image.setHorizontalAlignment(SwingConstants.CENTER);
+            bloc.add(titreResultat, BorderLayout.NORTH);
+            bloc.add(new JScrollPane(image), BorderLayout.CENTER);
+            panel.add(bloc);
+        }
+
+        frame.setContentPane(panel);
+        frame.pack();
+        frame.setLocationRelativeTo(this);
+        frame.setVisible(true);
+    }
+
+    private Applications.Resultat premierResultatPrincipal(Applications.Resultat[] resultats) {
+        for (Applications.Resultat resultat : resultats) {
+            if (resultat.resultatPrincipal) return resultat;
+        }
+        return resultats[0];
+    }
+
+    private void appliqueResultatApplication(Applications.Resultat resultat) {
+        if (resultat.estRGB()) {
+            imageRGB = resultat.imageRGB;
+            imageNG = null;
+            observer.setCImage(imageRGB);
+            activeMenusRGB();
+        }
+        else {
+            imageNG = resultat.imageNG;
+            imageRGB = null;
+            observer.setCImage(imageNG);
+            activeMenusNG();
+        }
+    }
     
     private void jCheckBoxMenuItemDessinerCerclePleinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItemDessinerCerclePleinActionPerformed
         if (!jCheckBoxMenuItemDessinerCerclePlein.isSelected()) observer.setMode(JLabelBeanCImage.INACTIF);
@@ -1460,6 +1618,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemDessinerPixel;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemDessinerRectangle;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItemDessinerRectanglePlein;
+    private javax.swing.JMenu jMenuApplications;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu jMenuContours;
     private javax.swing.JMenu jMenuContoursLineaire;
@@ -1480,6 +1639,13 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JMenuItem jMenuItemHistogrammeLineaire;
     private javax.swing.JMenuItem jMenuItemHistogrammeLineaireSaturation;
     private javax.swing.JMenuItem jMenuItemHistogrammeNegatif;
+    private javax.swing.JMenuItem jMenuItemApplication1;
+    private javax.swing.JMenuItem jMenuItemApplication2;
+    private javax.swing.JMenuItem jMenuItemApplication3;
+    private javax.swing.JMenuItem jMenuItemApplication4;
+    private javax.swing.JMenuItem jMenuItemApplication5;
+    private javax.swing.JMenuItem jMenuItemApplication6;
+    private javax.swing.JMenuItem jMenuItemApplication7;
     private javax.swing.JMenuItem jMenuItemMorphoDilatation;
     private javax.swing.JMenuItem jMenuItemMorphoDilatationGeodesique;
     private javax.swing.JMenuItem jMenuItemMorphoErosion;

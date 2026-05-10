@@ -60,3 +60,60 @@ Le menu "Applications" de l'interface permet de lancer la résolution de 7 probl
 * **Travail en équipe** : Projet réalisé par un groupe de 3 étudiants.
 * **Interface Utilisateur** : Une interface Java permet d'interagir avec les différents paramètres (fréquences de coupure, masques, seuils).
 * **Évaluation** : Présentation orale portant sur l'explication du code, des algorithmes et l'interprétation des résultats obtenus.
+
+---
+
+# Étape 5 — Applications
+
+Voir le dossier `test` dans le dataset.
+
+---
+
+## 1. Réduction du bruit
+
+Objectif : réduire au maximum le bruit présent dans les images `imageBruitee1.png` et `imageBruitee2.png`.
+
+### Image bruitée 1
+
+Après plusieurs tests, la meilleure solution retenue est le **filtrage médian**.
+
+Tests effectués :
+
+- **2 × filtre médian 3x3**  
+  Le bruit est encore légèrement visible, mais la fleur reste assez nette.
+
+- **2 × filtre médian 5x5**  
+  Le bruit est davantage réduit, mais la fleur devient moins nette.
+
+Conclusion pour cette image :  
+Le filtre médian est le plus adapté, car le bruit est principalement de type “sel et poivre”. Plus la taille du filtre augmente, plus le bruit diminue, mais plus l’image devient floue. Le meilleur compromis semble donc être le filtre médian 3x3 appliqué plusieurs fois, ou un filtre médian 5x5 si l’on accepte une perte de netteté.
+
+### Image bruitée 2
+
+Après plusieurs tests, quatre méthodes donnent des résultats visuellement proches :
+
+- fermeture 3x3 + ouverture 3x3 ;
+- 2 × filtre médian 3x3 ;
+- filtre médian 3x3 + fermeture 3x3 + ouverture 3x3 ;
+- filtre médian 5x5.
+
+À l’œil nu, les quatre solutions se valent.
+
+Conclusion pour cette image :  
+Le bruit est plus structuré que dans la première image, avec des traits clairs et sombres. Le filtre médian permet de supprimer une partie de ces parasites, tandis que l’ouverture et la fermeture peuvent aider à réduire certaines rayures. Cependant, plus on applique de traitements, plus l’image devient floue. Il faut donc trouver un compromis entre réduction du bruit et conservation des détails du visage.
+
+### Conclusion générale
+
+Plusieurs solutions permettent de réduire le bruit d’une image. L’objectif n’est pas seulement de supprimer tout le bruit, mais aussi de conserver une image suffisamment nette. Une suppression trop forte du bruit peut entraîner une perte importante de détails. Le choix du filtre dépend donc du type de bruit et du résultat visuel recherché.
+
+---
+
+## 2. 
+Rehausser l’image lenaAEgaliser.jpg en réalisant une égalisation d’histogramme.
+Tester les deux possibilités : (a) Réaliser l’égalisation de l’histogramme des 3 images
+RGB séparément. (b) Egaliser l’histogramme de l’image « luminance » de l’image et
+appliquer cette même égalisation aux 3 composantes RGB de l’image (même courbe
+tonale). Quelle méthode donne le meilleur résultat ?
+
+
+

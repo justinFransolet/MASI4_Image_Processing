@@ -179,9 +179,32 @@ public class Applications {
         };
     }
 
-    public static Resultat[] exercice6(File dossierDatasets, File dossierSortie) throws IOException, CImageRGBException {
+    public static Resultat[] exercice6(File dossierDatasets, File dossierSortie) throws IOException, CImageRGBException, CImageNGException {
 
-        return null;
+        int[][] image = chargerNG(dossierDatasets, "vaisseaux.jpg");
+
+        int [][] seuillage = Seuillage.seuillageAutomatique(image);
+
+        int [][] fermeture = MorphoElementaire.fermeture(seuillage, 7);
+
+        int [][] ouverture = MorphoElementaire.ouverture(fermeture, 47);
+
+        int [][] grosVaisseau = MorphoComplexe.reconstructionGeodesique(ouverture, image);
+
+        int [][] soustractionGrosVaisseau = soustraction(image, grosVaisseau);
+
+        int [][] ouverturePetitVaisseau = MorphoElementaire.ouverture(soustractionGrosVaisseau, 9);
+
+        int [][] seuillagePetitVaiseau = Seuillage.seuillageSimple(ouverturePetitVaisseau, 1);
+
+        int [][] petitVaisseau = MorphoComplexe.reconstructionGeodesique(seuillagePetitVaiseau, image);
+
+        return new Resultat[] {
+                new Resultat("6 - Image de base", new CImageNG(image), false),
+                new Resultat("6 - Gros vaisseau", new CImageNG(grosVaisseau), false),
+                new Resultat("6 - Soustraction du gros vaisseau", new CImageNG(soustractionGrosVaisseau), false),
+                new Resultat("6 - Petit vaisseau", new CImageNG(petitVaisseau))
+        };
     }
 
     public static Resultat[] exercice7(File dossierDatasets) throws IOException, CImageRGBException {

@@ -498,7 +498,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
                 .addContainerGap())
         );
 
-        setSize(new java.awt.Dimension(500, 400));
+        setSize(new java.awt.Dimension(1000 , 700));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 

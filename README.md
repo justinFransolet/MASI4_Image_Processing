@@ -181,4 +181,81 @@ Les deux images obtenues sont des images binaires :
 
 La méthode permet de séparer correctement les gros pois rouges et les gros pois bleus. Les petits points colorés sont supprimés grâce à l’ouverture morphologique, car ils sont beaucoup plus petits que les pois à conserver.
 
+---
+
+## 4. Séparation des grandes et petites balanes
+
+Objectif : à partir de l’image `balanes.png`, créer deux images en niveaux de gris :
+
+- une image contenant les balanes de grande taille ;
+- une image contenant les balanes de petite taille.
+
+L’image utilisée est une image en niveaux de gris. Les balanes sont globalement plus claires que le fond, ce qui permet de commencer par une segmentation par seuillage.
+
+### Méthode utilisée
+
+La première étape consiste à isoler toutes les balanes présentes dans l’image. Pour cela, un seuillage automatique est appliqué sur l’image originale.
+
+Le résultat est une image binaire dans laquelle :
+
+- les balanes valent 255 ;
+- le fond vaut 0.
+
+Après le seuillage, un nettoyage morphologique est réalisé. Une fermeture est d’abord appliquée afin de combler certaines petites zones noires dans les balanes et de consolider les formes. Ensuite, une ouverture est utilisée pour supprimer une partie du bruit et des petits éléments indésirables.
+
+Les traitements utilisés sont donc :
+
+- seuillage automatique ;
+- fermeture 7x7 ;
+- ouverture 11x11.
+
+### Extraction des grandes balanes
+
+Pour extraire les grandes balanes, une ouverture morphologique plus importante est appliquée sur le masque contenant toutes les balanes.
+
+L’ouverture avec un élément structurant de taille 23x23 permet de supprimer les objets trop petits. Les petites balanes disparaissent donc en grande partie, tandis que les grandes balanes restent présentes.
+
+Le résultat obtenu sert de masque pour les grandes balanes.
+
+### Extraction des petites balanes
+
+Les petites balanes sont obtenues par soustraction binaire :
+
+```text
+petites balanes = toutes les balanes - grandes balanes
+```
+
+Autrement dit, on conserve les pixels appartenant au masque de toutes les balanes, mais qui ne sont pas présents dans le masque des grandes balanes.
+
+Après cette soustraction, une ouverture 7x7 est appliquée afin de supprimer une partie des petits parasites restants.
+
+### Création des images finales en niveaux de gris
+
+Les masques binaires obtenus ne sont pas utilisés comme résultats finaux directement. Ils sont appliqués sur l’image originale afin de conserver les niveaux de gris réels des balanes.
+
+Ainsi :
+
+le masque des grandes balanes est appliqué sur l’image originale pour créer l’image des grandes balanes ;
+le masque des petites balanes est appliqué sur l’image originale pour créer l’image des petites balanes.
+
+Les pixels appartenant au masque conservent leur intensité d’origine, tandis que les autres pixels sont mis à 0.
+
+### Résultat
+
+L’image des grandes balanes est satisfaisante : les balanes principales sont correctement conservées et le fond est supprimé.
+
+L’image des petites balanes est plus difficile à obtenir proprement. Certaines petites balanes sont bien extraites, mais il reste encore des fragments ou du bruit provenant de la texture du fond et de certaines parties des grandes balanes. Cela s’explique par le fait que les petites balanes ont parfois une intensité proche du bruit ou des détails présents sur les grandes balanes.
+
+### Conclusion
+
+La séparation des balanes par taille fonctionne correctement pour les grandes balanes.
+Pour les petites balanes, le résultat est moins précis, car elles sont plus proches du bruit et plus difficiles à distinguer uniquement avec des opérations morphologiques simples.
+
+La méthode retenue repose donc sur :
+* un seuillage automatique pour isoler les objets clairs ;
+* des opérations morphologiques pour nettoyer l’image ;
+* une ouverture de grande taille pour isoler les grandes balanes ;
+* une soustraction binaire pour récupérer les petites balanes ;
+* l’application des masques sur l’image originale afin d’obtenir des images finales en niveaux de gris.
+
 

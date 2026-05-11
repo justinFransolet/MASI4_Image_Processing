@@ -7,6 +7,8 @@ import CImage.Exceptions.CImageRGBException;
 import ImageProcessing.Histogramme.Histogramme;
 import ImageProcessing.NonLineaire.MorphoComplexe;
 import ImageProcessing.NonLineaire.MorphoElementaire;
+import ImageProcessing.Seuillage.Seuillage;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -122,7 +124,38 @@ public class Applications {
 
     public static Resultat[] exercice4(File dossierDatasets) throws IOException, CImageNGException {
 
-        return null;
+        int[][] image = chargerNG(dossierDatasets, "balanes.png");
+
+        // 1) Binarisation : toutes les balanes en blanc, fond en noir
+        int[][] balanes = Seuillage.seuillageAutomatique(image);
+
+        // 2) Nettoyage morphologique
+        balanes = MorphoElementaire.fermeture(balanes, 7);
+        balanes = MorphoElementaire.ouverture(balanes, 11);
+
+        // 3) Extraction des grandes balanes
+        int[][] marqueurGrandes = MorphoElementaire.ouverture(balanes, 23);
+
+        /*
+         * 5) Les petites balanes sont ce qui reste quand on enlève les grandes.
+         */
+        int[][] petitesBalanesMasque = soustractionBinaire(balanes, marqueurGrandes);
+        petitesBalanesMasque = MorphoElementaire.ouverture(petitesBalanesMasque, 7);
+
+        /*
+         * 7) Application des masques sur l'image originale pour avoir des images NG.
+         */
+        int[][] imageGrandes = appliquerMasque(image, marqueurGrandes);
+        int[][] imagePetites = appliquerMasque(image, petitesBalanesMasque);
+
+        return new Resultat[] {
+                new Resultat("4 - origine balanes", new CImageNG(image), false),
+                new Resultat("4 - masque de toutes les balanes", new CImageNG(balanes), false),
+                new Resultat("4 - marqueur grandes balanes", new CImageNG(marqueurGrandes), false),
+                new Resultat("4 - marqueur petites balanes", new CImageNG(petitesBalanesMasque), false),
+                new Resultat("4 - grandes balanes", new CImageNG(imageGrandes)),
+                new Resultat("4 - petites balanes", new CImageNG(imagePetites))
+        };
     }
 
     public static Resultat[] exercice5(File dossierDatasets) throws IOException, CImageNGException {
@@ -196,6 +229,42 @@ public class Applications {
 
     private static int[][] nettoyerBinaire(int[][] masque, int taille) {
         return MorphoElementaire.fermeture(MorphoElementaire.ouverture(masque, taille), taille);
+    }
+
+    private static int[][] soustractionBinaire(int[][] image1, int[][] image2) {
+        int largeur = image1.length;
+        int hauteur = image1[0].length;
+        int[][] resultat = new int[largeur][hauteur];
+
+        for (int x = 0; x < largeur; x++) {
+            for (int y = 0; y < hauteur; y++) {
+                if (image1[x][y] > 0 && image2[x][y] == 0) {
+                    resultat[x][y] = 255;
+                } else {
+                    resultat[x][y] = 0;
+                }
+            }
+        }
+
+        return resultat;
+    }
+
+    private static int[][] appliquerMasque(int[][] image, int[][] masque) {
+        int largeur = image.length;
+        int hauteur = image[0].length;
+        int[][] resultat = new int[largeur][hauteur];
+
+        for (int x = 0; x < largeur; x++) {
+            for (int y = 0; y < hauteur; y++) {
+                if (masque[x][y] > 0) {
+                    resultat[x][y] = image[x][y];
+                } else {
+                    resultat[x][y] = 0;
+                }
+            }
+        }
+
+        return resultat;
     }
 
     private static int clamp(int valeur) {

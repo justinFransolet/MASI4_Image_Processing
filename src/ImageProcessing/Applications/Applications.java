@@ -163,27 +163,19 @@ public class Applications {
         int[][] image = chargerNG(dossierDatasets, "tools.png");
 
         // 1) Détection des nuages sans les objets
-        int[][] nuages = MorphoElementaire.ouverture(image,51);
+        int[][] nuages = MorphoElementaire.ouverture(image,29);
 
         // 2) Soustraction des nuages de l'image de base
         int[][] imageSansBruit = soustraction(image, nuages);
 
-        // 2) Binarisation : toutes les balanes en blanc, fond en noir
-        int[][] tools = Seuillage.seuillageAutomatique(imageSansBruit);
-
-        // 3) Nettoyage morphologique
-        tools = MorphoElementaire.fermeture(tools, 5);
-        tools = MorphoElementaire.ouverture(tools, 3);
-
-        // 4) Extraction des objets
-        int[][] imageTools = appliquerMasque(image, tools);
+        // 3) Seuillage pour avoir l'image en binaire
+        int[][] imageSeuillie = Seuillage.seuillageSimple(imageSansBruit, 45);
 
         return new Resultat[] {
                 new Resultat("5 - Image de base", new CImageNG(image), false),
                 new Resultat("5 - Masque des nuages(bruit)", new CImageNG(nuages), false),
                 new Resultat("5 - Image sans bruit", new CImageNG(imageSansBruit), false),
-                new Resultat("5 - Image filtrée", new CImageNG(tools), false),
-                new Resultat("5 - Image finale", new CImageNG(imageTools))
+                new Resultat("5 - Image finale", new CImageNG(imageSeuillie))
         };
     }
 

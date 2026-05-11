@@ -160,7 +160,31 @@ public class Applications {
 
     public static Resultat[] exercice5(File dossierDatasets) throws IOException, CImageNGException {
 
-        return null;
+        int[][] image = chargerNG(dossierDatasets, "tools.png");
+
+        // 1) Détection des nuages sans les objets
+        int[][] nuages = MorphoElementaire.ouverture(image,51);
+
+        // 2) Soustraction des nuages de l'image de base
+        int[][] imageSansBruit = soustraction(image, nuages);
+
+        // 2) Binarisation : toutes les balanes en blanc, fond en noir
+        int[][] tools = Seuillage.seuillageAutomatique(imageSansBruit);
+
+        // 3) Nettoyage morphologique
+        tools = MorphoElementaire.fermeture(tools, 5);
+        tools = MorphoElementaire.ouverture(tools, 3);
+
+        // 4) Extraction des objets
+        int[][] imageTools = appliquerMasque(image, tools);
+
+        return new Resultat[] {
+                new Resultat("5 - Image de base", new CImageNG(image), false),
+                new Resultat("5 - Masque des nuages(bruit)", new CImageNG(nuages), false),
+                new Resultat("5 - Image sans bruit", new CImageNG(imageSansBruit), false),
+                new Resultat("5 - Image filtrée", new CImageNG(tools), false),
+                new Resultat("5 - Image finale", new CImageNG(imageTools))
+        };
     }
 
     public static Resultat[] exercice6(File dossierDatasets, File dossierSortie) throws IOException, CImageRGBException {
@@ -248,6 +272,21 @@ public class Applications {
 
         return resultat;
     }
+    private static int[][] soustraction(int[][] image1, int[][] image2) {
+        int largeur = image1.length;
+        int hauteur = image1[0].length;
+        int[][] resultat = new int[largeur][hauteur];
+
+        for (int x = 0; x < largeur; x++) {
+            for (int y = 0; y < hauteur; y++) {
+                int diff = image1[x][y] - image2[x][y];
+                resultat[x][y] = Math.max(0, diff);
+            }
+        }
+
+        return resultat;
+    }
+
 
     private static int[][] appliquerMasque(int[][] image, int[][] masque) {
         int largeur = image.length;

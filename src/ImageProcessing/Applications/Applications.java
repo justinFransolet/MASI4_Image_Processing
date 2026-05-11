@@ -99,20 +99,22 @@ public class Applications {
         int[][] bleu = new int[largeur][hauteur];
         image.getMatricesRGB(rouge, vert, bleu);
 
-        int[][] poisBleus = new int[largeur][hauteur];
-        int[][] poisRouges = new int[largeur][hauteur];
+        int[][] masqueBleus = new int[largeur][hauteur];
+        int[][] masqueRouges = new int[largeur][hauteur];
         for (int x = 0; x < largeur; x++) {
             for (int y = 0; y < hauteur; y++) {
-                poisBleus[x][y] = (bleu[x][y] > 80 && bleu[x][y] > rouge[x][y] + 25 && bleu[x][y] > vert[x][y] + 10) ? 255 : 0;
-                poisRouges[x][y] = (rouge[x][y] > 80 && rouge[x][y] > vert[x][y] + 25 && rouge[x][y] > bleu[x][y] + 25) ? 255 : 0;
+                masqueBleus[x][y] = (bleu[x][y] > 80 && bleu[x][y] > rouge[x][y] + 25 && bleu[x][y] > vert[x][y] + 10) ? 255 : 0;
+                masqueRouges[x][y] = (rouge[x][y] > 80 && rouge[x][y] > vert[x][y] + 25 && rouge[x][y] > bleu[x][y] + 25) ? 255 : 0;
             }
         }
 
-        poisBleus = nettoyerBinaire(poisBleus, 5);
-        poisRouges = nettoyerBinaire(poisRouges, 5);
+        int[][] poisBleus = nettoyerBinaire(masqueBleus, 5);
+        int[][] poisRouges = nettoyerBinaire(masqueRouges, 5);
 
         return new Resultat[] {
                 new Resultat("3 - origine petitsPois", image, false),
+                new Resultat("3 - masque bleu avant nettoyage", new CImageNG(masqueBleus), false),
+                new Resultat("3 - masque rouge avant nettoyage", new CImageNG(masqueRouges), false),
                 new Resultat("3 - pois bleus", new CImageNG(poisBleus)),
                 new Resultat("3 - pois rouges", new CImageNG(poisRouges))
         };

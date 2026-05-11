@@ -108,12 +108,77 @@ Plusieurs solutions permettent de réduire le bruit d’une image. L’objectif 
 
 ---
 
-## 2. 
-Rehausser l’image lenaAEgaliser.jpg en réalisant une égalisation d’histogramme.
-Tester les deux possibilités : (a) Réaliser l’égalisation de l’histogramme des 3 images
-RGB séparément. (b) Egaliser l’histogramme de l’image « luminance » de l’image et
-appliquer cette même égalisation aux 3 composantes RGB de l’image (même courbe
-tonale). Quelle méthode donne le meilleur résultat ?
+## 2. Rehaussement de l’image lenaAEgaliser.jpg
 
+Objectif : rehausser l’image `lenaAEgaliser.jpg` en réalisant une égalisation d’histogramme.
+
+Deux méthodes ont été testées :
+
+- égalisation séparée des trois composantes RGB ;
+- égalisation à partir de la luminance de l’image.
+
+### Méthode A : égalisation séparée des composantes RGB
+
+Dans cette méthode, l’image couleur est séparée en trois composantes :
+
+- rouge ;
+- verte ;
+- bleue.
+
+Une courbe d’égalisation est ensuite calculée séparément pour chaque composante.  
+La composante rouge est donc rehaussée avec sa propre courbe tonale, la composante verte avec une autre courbe, et la composante bleue avec une troisième courbe.
+
+Cette méthode permet d’augmenter fortement le contraste de l’image. Cependant, comme les trois composantes ne sont pas transformées de la même manière, l’équilibre des couleurs peut être modifié. Le résultat obtenu peut donc paraître moins naturel, avec des couleurs légèrement déformées.
+
+
+### Méthode B : égalisation à partir de la luminance
+
+Dans cette méthode, une image de luminance est d’abord calculée à partir des composantes RGB.
+
+La formule utilisée est :
+
+```text
+Y = 0.299R + 0.587G + 0.114B
+```
+Cette image de luminance représente l’intensité lumineuse globale de l’image couleur. Une seule courbe d’égalisation est ensuite calculée à partir de cette luminance. Cette même courbe tonale est appliquée aux trois composantes rouge, verte et bleue. L’avantage est que les trois composantes RGB sont transformées de la même manière. 
+Les relations entre les couleurs sont donc mieux conservées.
+
+### Comparaison des résultats
+Les deux méthodes permettent d’améliorer le contraste de l’image.
+
+La méthode A, avec égalisation séparée des composantes RGB, produit une image plus contrastée, mais elle peut modifier les couleurs originales. Cela s’explique par le fait que chaque composante couleur possède sa propre transformation.
+
+La méthode B, basée sur la luminance, donne un résultat plus naturel. Le contraste est amélioré, mais les couleurs restent plus proches de celles de l’image de départ, car une seule et même courbe tonale est appliquée aux trois composantes.
+
+### Conclusion
+Visuellement, je choisirai la méthode A.
+
+---
+
+## 3. Extraction des pois rouges et bleus
+
+Objectif : à partir de l’image `petitsPois.png`, créer deux images binaires :
+- une image contenant uniquement les pois rouges ;
+- une image contenant uniquement les pois bleus.
+
+L’image utilisée est l’image RGB, car l’image en niveaux de gris ne permet pas de distinguer correctement les objets rouges des objets bleus. En niveaux de gris, les deux couleurs deviennent simplement des intensités proches.
+
+### Méthode utilisée
+
+L’image RGB est séparée en trois composantes : rouge, verte et bleue.
+
+Pour extraire les pois rouges, on conserve les pixels dont la composante rouge est dominante par rapport aux composantes verte et bleue.
+
+Pour extraire les pois bleus, on conserve les pixels dont la composante bleue est dominante par rapport aux composantes rouge et verte.
+
+Après cette première segmentation, l’image contient encore de petits points parasites. Une ouverture morphologique est donc appliquée afin de supprimer les petits objets. Une fermeture est ensuite utilisée pour lisser légèrement les formes obtenues.
+
+### Résultat
+
+Les deux images obtenues sont des images binaires :
+- les pois sélectionnés valent 255 ;
+- le fond vaut 0.
+
+La méthode permet de séparer correctement les gros pois rouges et les gros pois bleus. Les petits points colorés sont supprimés grâce à l’ouverture morphologique, car ils sont beaucoup plus petits que les pois à conserver.
 
 

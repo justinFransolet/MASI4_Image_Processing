@@ -273,9 +273,40 @@ public class Applications {
         };
     }
 
-    public static Resultat[] exercice7(File dossierDatasets) throws IOException, CImageRGBException {
+    public static Resultat[] exercice7(File dossierDatasets) throws IOException, CImageNGException, CImageRGBException {
 
-        return null;
+        CImageRGB imageRGB = chargerRGB(dossierDatasets, "Tartines.jpg");
+        int[][] imageGris = chargerNG(dossierDatasets, "Tartines.jpg");
+
+        // 1) Filtrer les ombres et les reflex
+        int[] courbeSaturation = Histogramme.creeCourbeTonaleLineaireSaturation(50,200);
+        int[][] imageMoinsCouleur = Histogramme.rehaussement(imageGris, courbeSaturation);
+        imageMoinsCouleur = MorphoComplexe.filtreMedian(imageMoinsCouleur, 5);
+
+        // 2. Seuillage automatique pour créer le masque binaire de la tartine
+        int[][] imageBinaire = Seuillage.seuillageAutomatique(imageMoinsCouleur);
+
+        // 3. Nettoyage morphologique
+        // - Fermeture (taille 5) pour boucher les trous internes restants
+        int[][] imageFermee = MorphoElementaire.fermeture(imageBinaire, 5);
+        // - Ouverture (taille 3) pour éliminer le bruit sur l'arrière-plan
+        int[][] masquePropre = MorphoElementaire.ouverture(imageFermee, 9);
+
+        // 4. Extraction du contour binaire à l'aide du gradient d'érosion
+        // Le gradient d'érosion d'une forme binaire donne ses contours externes exacts.
+        int[][] contoursBinaires = ContoursNonLineaire.gradientErosion(masquePropre);
+
+        // 5. Superposition des contours en vert sur l'image couleur d'origine
+        CImageRGB imageRBGContours = incrusterContoursVerts(imageRGB, contoursBinaires);
+
+        return new Resultat[] {
+                new Resultat("7 - Image de base", imageRGB, false),
+                new Resultat("7 - Image avec moins de reflex et d'ombre", new CImageNG(imageMoinsCouleur), false),
+                new Resultat("7 - Image seuillée", new CImageNG(imageBinaire), false),
+                new Resultat("7 - Image nettoyée", new CImageNG(masquePropre), false),
+                new Resultat("7 - Contours binaires", new CImageNG(contoursBinaires), false),
+                new Resultat("7 - Contours verts superposés", imageRBGContours)
+        };
     }
 
     private static CImageNG chargerImageNG(File dossierDatasets, String nom) throws IOException {
@@ -387,9 +418,35 @@ public class Applications {
         return resultat;
     }
 
+    /**
+     * Superpose un contour binaire en vert sur une image couleur RGB.
+     */
+    private static CImageRGB incrusterContoursVerts(CImageRGB imageOrigine, int[][] contours) throws CImageRGBException {
+        int largeur = imageOrigine.getLargeur();
+        int hauteur = imageOrigine.getHauteur();
+
+        int[][] rougeCopie = new int[largeur][hauteur];
+        int[][] vertCopie = new int[largeur][hauteur];
+        int[][] bleuCopie = new int[largeur][hauteur];
+
+        imageOrigine.getMatricesRGB(rougeCopie, vertCopie, bleuCopie);
+
+        // Coloration du contour en vert
+        for (int x = 0; x < largeur; x++) {
+            for (int y = 0; y < hauteur; y++) {
+                if (contours[x][y] > 0) {
+                    rougeCopie[x][y] = 0;
+                    vertCopie[x][y] = 255;
+                    bleuCopie[x][y] = 0;
+                }
+            }
+        }
+
+        return new CImageRGB(rougeCopie, vertCopie, bleuCopie);
+    }
+
     private static int clamp(int valeur) {
         if (valeur < 0) return 0;
-        if (valeur > 255) return 255;
-        return valeur;
+        return Math.min(valeur, 255);
     }
 }

@@ -4,6 +4,7 @@ import CImage.CImageNG;
 import CImage.CImageRGB;
 import CImage.Exceptions.CImageNGException;
 import CImage.Exceptions.CImageRGBException;
+import ImageProcessing.Contours.ContoursNonLineaire;
 import ImageProcessing.Histogramme.Histogramme;
 import ImageProcessing.NonLineaire.MorphoComplexe;
 import ImageProcessing.NonLineaire.MorphoElementaire;
@@ -197,13 +198,78 @@ public class Applications {
 
         int [][] seuillagePetitVaiseau = Seuillage.seuillageSimple(ouverturePetitVaisseau, 1);
 
-        int [][] petitVaisseau = MorphoComplexe.reconstructionGeodesique(seuillagePetitVaiseau, image);
+        int [][] masquePetitVaisseau = MorphoElementaire.fermeture(seuillagePetitVaiseau, 3);
+
+        CImageRGB imageVaisseauxRGB = chargerRGB(dossierDatasets, "vaisseaux.jpg");
+        CImageRGB imagePlaneteRGB = chargerRGB(dossierDatasets, "planete.jpg");
+
+        int largeur = imageVaisseauxRGB.getLargeur();
+        int hauteur = imageVaisseauxRGB.getHauteur();
+
+        int[][] rougeV = new int[largeur][hauteur];
+        int[][] vertV = new int[largeur][hauteur];
+        int[][] bleuV = new int[largeur][hauteur];
+        imageVaisseauxRGB.getMatricesRGB(rougeV, vertV, bleuV);
+
+        int[][] rougeP = new int[largeur][hauteur];
+        int[][] vertP = new int[largeur][hauteur];
+        int[][] bleuP = new int[largeur][hauteur];
+        imagePlaneteRGB.getMatricesRGB(rougeP, vertP, bleuP);
+
+        if (imageVaisseauxRGB.getLargeur() != imagePlaneteRGB.getLargeur()
+                || imageVaisseauxRGB.getHauteur() != imagePlaneteRGB.getHauteur()) {
+            throw new IllegalArgumentException("Les deux images doivent avoir la même taille.");
+        }
+
+        for (int x = 0; x < largeur; x++) {
+            for (int y = 0; y < hauteur; y++) {
+                if (masquePetitVaisseau[x][y] > 0) {
+                    rougeP[x][y] = rougeV[x][y];
+                    vertP[x][y] = vertV[x][y];
+                    bleuP[x][y] = bleuV[x][y];
+                }
+            }
+        }
+
+        CImageRGB synthese = new CImageRGB(rougeP, vertP, bleuP);
+
+        File fichierSynthese = new File(dossierSortie, "synthese.png");
+        synthese.enregistreFormatPNG(fichierSynthese);
+
+        // Création du contour du petit vaisseau avec les fonctions de contours déjà implémentées
+        int[][] contourPetitVaisseau = ContoursNonLineaire.gradientDilatation(masquePetitVaisseau);
+
+        // Par sécurité, on rebinarise le contour (mais pas vraiment nécessaire)
+        contourPetitVaisseau = Seuillage.seuillageSimple(contourPetitVaisseau, 1);
+
+        // Copie de l'image synthese pour créer synthese2
+        int[][] rougeS2 = new int[largeur][hauteur];
+        int[][] vertS2 = new int[largeur][hauteur];
+        int[][] bleuS2 = new int[largeur][hauteur];
+
+        synthese.getMatricesRGB(rougeS2, vertS2, bleuS2);
+
+        // Coloration du contour en rouge
+        for (int x = 0; x < largeur; x++) {
+            for (int y = 0; y < hauteur; y++) {
+                if (contourPetitVaisseau[x][y] > 0) {
+                    rougeS2[x][y] = 255;
+                    vertS2[x][y] = 0;
+                    bleuS2[x][y] = 0;
+                }
+            }
+        }
+
+        CImageRGB synthese2 = new CImageRGB(rougeS2, vertS2, bleuS2);
+
+        File fichierSynthese2 = new File(dossierSortie, "synthese2.png");
+        synthese2.enregistreFormatPNG(fichierSynthese2);
 
         return new Resultat[] {
-                new Resultat("6 - Image de base", new CImageNG(image), false),
-                new Resultat("6 - Gros vaisseau", new CImageNG(grosVaisseau), false),
-                new Resultat("6 - Soustraction du gros vaisseau", new CImageNG(soustractionGrosVaisseau), false),
-                new Resultat("6 - Petit vaisseau", new CImageNG(petitVaisseau))
+                new Resultat("6 - Image de base vaisseaux", imageVaisseauxRGB, false),
+                new Resultat("6 - Image de base planete", imagePlaneteRGB, false),
+                new Resultat("6 - Synthese", synthese, false),
+                new Resultat("6 - Synthese2 contour rouge", synthese2)
         };
     }
 

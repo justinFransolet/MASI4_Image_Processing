@@ -273,7 +273,7 @@ public class Applications {
         };
     }
 
-    public static Resultat[] exercice7(File dossierDatasets) throws IOException, CImageNGException, CImageRGBException {
+    public static Resultat[] exercice7a(File dossierDatasets) throws IOException, CImageNGException, CImageRGBException {
 
         CImageRGB imageRGB = chargerRGB(dossierDatasets, "Tartines.jpg");
         int[][] imageGris = chargerNG(dossierDatasets, "Tartines.jpg");
@@ -305,27 +305,68 @@ public class Applications {
         // 6) Union des deux seuillages
         int[][] imageSeuilRO = unionImages(imageSeuilR, imageSeuilO);
 
-        // 3. Nettoyage morphologique
+        // 7) Nettoyage morphologique
         int[][] imageFermee = MorphoComplexe.filtreMedian(imageSeuilR, 3);
         imageFermee = MorphoElementaire.ouverture(imageFermee, 67);
 
-        // 4. Extraction du contour binaire à l'aide du gradient d'érosion
+        // 8) Extraction du contour binaire à l'aide du laplacien
         int[][] contoursBinaires = ContoursNonLineaire.laplacienNonLineaire(imageFermee);
 
-        // 5. Superposition des contours en vert sur l'image couleur d'origine
+        // 9) Superposition des contours en vert sur l'image couleur d'origine
         CImageRGB imageRBGContours = incrusterContoursVerts(imageRGB, contoursBinaires);
 
         return new Resultat[] {
-                new Resultat("7 - Image de base", imageRGB, false),
-                new Resultat("7 - Image avec moins de reflex", new CImageNG(imageSat), false),
-                new Resultat("7 - Image Reflex median", new CImageNG(imageLissee), false),
-                new Resultat("7 - Image Reflex seuillée et dilatée", new CImageNG(imageSeuilR), false),
-                new Resultat("7 - Image avec moins d'ombre", new CImageNG(imageGamma), false),
-                new Resultat("7 - Image Ombre seuillée et dilatée", new CImageNG(imageSeuilO), false),
-                new Resultat("7 - Image fusionnée", new CImageNG(imageSeuilRO), false),
-                new Resultat("7 - Image fermé", new CImageNG(imageFermee), false),
-                new Resultat("7 - Image contour binaire", new CImageNG(contoursBinaires), false),
-                new Resultat("7 - Contours verts superposés", imageRBGContours)
+                new Resultat("7a - Image de base", imageRGB, false),
+                new Resultat("7a - Image avec moins de reflex", new CImageNG(imageSat), false),
+                new Resultat("7a - Image Reflex median", new CImageNG(imageLissee), false),
+                new Resultat("7a - Image Reflex seuillée et dilatée", new CImageNG(imageSeuilR), false),
+                new Resultat("7a - Image avec moins d'ombre", new CImageNG(imageGamma), false),
+                new Resultat("7a - Image Ombre seuillée et dilatée", new CImageNG(imageSeuilO), false),
+                new Resultat("7a - Image fusionnée", new CImageNG(imageSeuilRO), false),
+                new Resultat("7a - Image fermé", new CImageNG(imageFermee), false),
+                new Resultat("7a - Image contour binaire", new CImageNG(contoursBinaires), false),
+                new Resultat("7a - Contours verts superposés", imageRBGContours)
+        };
+    }
+
+    public static Resultat[] exercice7b(File dossierDatasets) throws IOException, CImageNGException, CImageRGBException {
+
+        CImageRGB imageRGB = chargerRGB(dossierDatasets, "Tartines.jpg");
+        int[][] imageGris = chargerNG(dossierDatasets, "Tartines.jpg");
+
+        // 1) Gestion la saturation
+        int[] courbeSaturation = Histogramme.creeCourbeTonaleLineaireSaturation(40,200);
+        int[][] imageSat = Histogramme.rehaussement(imageGris, courbeSaturation);
+
+        // 2) Gestion du Gamma
+        int[] courbeGamma = Histogramme.creeCourbeTonaleGamma(0.7);
+        int[][] imageGamma = Histogramme.rehaussement(imageSat, courbeGamma);
+
+        // 3) Egalisation
+        int[] courbeEgalisation = Histogramme.creeCourbeTonaleEgalisation(imageGamma);
+        imageGamma = Histogramme.rehaussement(imageGamma, courbeEgalisation);
+
+        // 4) Nettoyage morphologique
+        int[][] imageOuvert = MorphoElementaire.ouverture(imageGamma, 67);
+
+        // 5) Seuillage auto
+
+        int[][] imageSeuillee = Seuillage.seuillageAutomatique(imageOuvert);
+
+        // 6) Extraction du contour binaire à l'aide du laplacien
+        int[][] contoursBinaires = ContoursNonLineaire.laplacienNonLineaire(imageSeuillee);
+
+        // 7) Superposition des contours en vert sur l'image couleur d'origine
+        CImageRGB imageRBGContours = incrusterContoursVerts(imageRGB, contoursBinaires);
+
+        return new Resultat[] {
+                new Resultat("7b - Image de base", imageRGB, false),
+                new Resultat("7b - Image saturée", new CImageNG(imageSat), false),
+                new Resultat("7b - Image gamma augmenté et égalisée", new CImageNG(imageGamma), false),
+                new Resultat("7b - Image ouverte", new CImageNG(imageOuvert), false),
+                new Resultat("7b - Image seuillée", new CImageNG(imageSeuillee), false),
+                new Resultat("7b - Image contour binaire", new CImageNG(contoursBinaires), false),
+                new Resultat("7b - Contours verts superposés", imageRBGContours)
         };
     }
 

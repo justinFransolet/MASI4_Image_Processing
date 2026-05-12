@@ -153,7 +153,8 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuItemApplication4 = new javax.swing.JMenuItem();
         jMenuItemApplication5 = new javax.swing.JMenuItem();
         jMenuItemApplication6 = new javax.swing.JMenuItem();
-        jMenuItemApplication7 = new javax.swing.JMenuItem();
+        jMenuItemApplication7a = new javax.swing.JMenuItem();
+        jMenuItemApplication7b = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Isil Image Processing");
@@ -473,9 +474,13 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         jMenuItemApplication6.addActionListener(this::jMenuItemApplication6ActionPerformed);
         jMenuApplications.add(jMenuItemApplication6);
 
-        jMenuItemApplication7.setText("7 - Contours tartines");
-        jMenuItemApplication7.addActionListener(this::jMenuItemApplication7ActionPerformed);
-        jMenuApplications.add(jMenuItemApplication7);
+        jMenuItemApplication7a.setText("7A - Contours tartines");
+        jMenuItemApplication7a.addActionListener(this::jMenuItemApplication7aActionPerformed);
+        jMenuApplications.add(jMenuItemApplication7a);
+
+        jMenuItemApplication7b.setText("7B - Contours tartines");
+        jMenuItemApplication7b.addActionListener(this::jMenuItemApplication7bActionPerformed);
+        jMenuApplications.add(jMenuItemApplication7b);
 
         jMenuBar1.add(jMenuApplications);
 
@@ -1065,6 +1070,7 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
             }
         }
 
+        assert masque != null;
         if (masque.length != nbColonnes) {
             throw new IllegalArgumentException("Le masque doit être carré.");
         }
@@ -1114,8 +1120,12 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
         lanceApplication("Application 6 - Synthese", 6);
     }
 
-    private void jMenuItemApplication7ActionPerformed(java.awt.event.ActionEvent evt) {
-        lanceApplication("Application 7 - Tartines", 7);
+    private void jMenuItemApplication7aActionPerformed(java.awt.event.ActionEvent evt) {
+        lanceApplication("Application 7A - Tartines", 7);
+    }
+
+    private void jMenuItemApplication7bActionPerformed(java.awt.event.ActionEvent evt) {
+        lanceApplication("Application 7B - Tartines", 8);
     }
 
     private void lanceApplication(String titre, int numero) {
@@ -1145,7 +1155,10 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
                     resultats = Applications.exercice6(datasets, sortie);
                     break;
                 case 7:
-                    resultats = Applications.exercice7(datasets);
+                    resultats = Applications.exercice7a(datasets);
+                    break;
+                case 8:
+                    resultats = Applications.exercice7b(datasets);
                     break;
                 default:
                     return;
@@ -1645,7 +1658,9 @@ public class IsilImageProcessing extends javax.swing.JFrame implements ClicListe
     private javax.swing.JMenuItem jMenuItemApplication4;
     private javax.swing.JMenuItem jMenuItemApplication5;
     private javax.swing.JMenuItem jMenuItemApplication6;
-    private javax.swing.JMenuItem jMenuItemApplication7;
+    private javax.swing.JMenuItem jMenuItemApplication7a;
+
+    private javax.swing.JMenuItem jMenuItemApplication7b;
     private javax.swing.JMenuItem jMenuItemMorphoDilatation;
     private javax.swing.JMenuItem jMenuItemMorphoDilatationGeodesique;
     private javax.swing.JMenuItem jMenuItemMorphoErosion;

@@ -307,7 +307,6 @@ public class Applications {
 
         // 3. Nettoyage morphologique
         int[][] imageFermee = MorphoComplexe.filtreMedian(imageSeuilR, 3);
-        imageFermee = MorphoElementaire.fermeture(imageFermee, 3);
         imageFermee = MorphoElementaire.ouverture(imageFermee, 67);
 
         // 4. Extraction du contour binaire à l'aide du gradient d'érosion

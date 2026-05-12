@@ -278,33 +278,54 @@ public class Applications {
         CImageRGB imageRGB = chargerRGB(dossierDatasets, "Tartines.jpg");
         int[][] imageGris = chargerNG(dossierDatasets, "Tartines.jpg");
 
-        // 1) Filtrer les ombres et les reflex
+        // A) Anti-Reflex
+        // 1) Gestion des pixels trop lumineux
         int[] courbeSaturation = Histogramme.creeCourbeTonaleLineaireSaturation(50,200);
-        int[][] imageMoinsCouleur = Histogramme.rehaussement(imageGris, courbeSaturation);
-        imageMoinsCouleur = MorphoComplexe.filtreMedian(imageMoinsCouleur, 5);
+        int[][] imageSat = Histogramme.rehaussement(imageGris, courbeSaturation);
 
-        // 2. Seuillage automatique pour créer le masque binaire de la tartine
-        int[][] imageBinaire = Seuillage.seuillageAutomatique(imageMoinsCouleur);
+        int[][] imageLissee = MorphoComplexe.filtreMedian(imageSat, 5);
+
+        // 2) Seuillage contre les reflex
+        int[][] imageSeuilR = Seuillage.seuillageSimple(imageLissee,200);
+
+        // B) Anti-Ombre
+        // 3) Gestion des pixels trop peu lumineux
+        int[] courbeGamma = Histogramme.creeCourbeTonaleGamma(0.7);
+        int[][] imageGamma = Histogramme.rehaussement(imageGris, courbeGamma);
+        int[] courbeEgalisation = Histogramme.creeCourbeTonaleEgalisation(imageGamma);
+        imageGamma = Histogramme.rehaussement(imageGamma, courbeEgalisation);
+
+        // 4) Seuillage contre les ombres
+        int[][] imageSeuilO = Seuillage.seuillageSimple(imageGamma, 128);
+
+        // 5) Dilatation des seuillages
+        imageSeuilR = MorphoElementaire.dilatation(imageSeuilR, 3);
+        imageSeuilO = MorphoElementaire.dilatation(imageSeuilO, 3);
+
+        // 6) Union des deux seuillages
+        int[][] imageSeuilRO = unionImages(imageSeuilR, imageSeuilO);
 
         // 3. Nettoyage morphologique
-        // - Fermeture (taille 5) pour boucher les trous internes restants
-        int[][] imageFermee = MorphoElementaire.fermeture(imageBinaire, 5);
-        // - Ouverture (taille 3) pour éliminer le bruit sur l'arrière-plan
-        int[][] masquePropre = MorphoElementaire.ouverture(imageFermee, 9);
+        int[][] imageFermee = MorphoComplexe.filtreMedian(imageSeuilR, 3);
+        imageFermee = MorphoElementaire.fermeture(imageFermee, 3);
+        imageFermee = MorphoElementaire.ouverture(imageFermee, 67);
 
         // 4. Extraction du contour binaire à l'aide du gradient d'érosion
-        // Le gradient d'érosion d'une forme binaire donne ses contours externes exacts.
-        int[][] contoursBinaires = ContoursNonLineaire.gradientErosion(masquePropre);
+        int[][] contoursBinaires = ContoursNonLineaire.laplacienNonLineaire(imageFermee);
 
         // 5. Superposition des contours en vert sur l'image couleur d'origine
         CImageRGB imageRBGContours = incrusterContoursVerts(imageRGB, contoursBinaires);
 
         return new Resultat[] {
                 new Resultat("7 - Image de base", imageRGB, false),
-                new Resultat("7 - Image avec moins de reflex et d'ombre", new CImageNG(imageMoinsCouleur), false),
-                new Resultat("7 - Image seuillée", new CImageNG(imageBinaire), false),
-                new Resultat("7 - Image nettoyée", new CImageNG(masquePropre), false),
-                new Resultat("7 - Contours binaires", new CImageNG(contoursBinaires), false),
+                new Resultat("7 - Image avec moins de reflex", new CImageNG(imageSat), false),
+                new Resultat("7 - Image Reflex median", new CImageNG(imageLissee), false),
+                new Resultat("7 - Image Reflex seuillée et dilatée", new CImageNG(imageSeuilR), false),
+                new Resultat("7 - Image avec moins d'ombre", new CImageNG(imageGamma), false),
+                new Resultat("7 - Image Ombre seuillée et dilatée", new CImageNG(imageSeuilO), false),
+                new Resultat("7 - Image fusionnée", new CImageNG(imageSeuilRO), false),
+                new Resultat("7 - Image fermé", new CImageNG(imageFermee), false),
+                new Resultat("7 - Image contour binaire", new CImageNG(contoursBinaires), false),
                 new Resultat("7 - Contours verts superposés", imageRBGContours)
         };
     }
@@ -443,6 +464,46 @@ public class Applications {
         }
 
         return new CImageRGB(rougeCopie, vertCopie, bleuCopie);
+    }
+
+    public static int[][] supprimerPixelsHauts(int[][] image, int seuil) {
+        int hauteur = image.length;
+        int largeur = image[0].length;
+
+        int[][] resultat = new int[hauteur][largeur];
+
+        for (int i = 0; i < hauteur; i++) {
+            for (int j = 0; j < largeur; j++) {
+                if (image[i][j] > seuil) {
+                    resultat[i][j] = 0;
+                } else {
+                    resultat[i][j] = image[i][j];
+                }
+            }
+        }
+
+        return resultat;
+    }
+
+    public static int[][] unionImages(int[][] imgA, int[][] imgB) {
+        int hauteur = imgA.length;
+        int largeur = imgA[0].length;
+
+        int[][] resultat = new int[hauteur][largeur];
+
+        for (int i = 0; i < hauteur; i++) {
+            for (int j = 0; j < largeur; j++) {
+
+                if (imgA[i][j] == 255 || imgB[i][j] == 255) {
+                    resultat[i][j] = 255;
+                } else {
+                    resultat[i][j] = 0;
+                }
+
+            }
+        }
+
+        return resultat;
     }
 
     private static int clamp(int valeur) {

@@ -466,25 +466,6 @@ public class Applications {
         return new CImageRGB(rougeCopie, vertCopie, bleuCopie);
     }
 
-    public static int[][] supprimerPixelsHauts(int[][] image, int seuil) {
-        int hauteur = image.length;
-        int largeur = image[0].length;
-
-        int[][] resultat = new int[hauteur][largeur];
-
-        for (int i = 0; i < hauteur; i++) {
-            for (int j = 0; j < largeur; j++) {
-                if (image[i][j] > seuil) {
-                    resultat[i][j] = 0;
-                } else {
-                    resultat[i][j] = image[i][j];
-                }
-            }
-        }
-
-        return resultat;
-    }
-
     public static int[][] unionImages(int[][] imgA, int[][] imgB) {
         int hauteur = imgA.length;
         int largeur = imgA[0].length;

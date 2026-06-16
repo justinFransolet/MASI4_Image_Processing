@@ -48,6 +48,16 @@ public class Applications {
         }
     }
 
+    /** * Exercice 1 : réduction de bruit.
+     *
+     * Image 1 :
+     * - filtre médian (5)
+     * - filtre médian (5)
+     *
+     * Image 2 :
+     * - fermeture (3)
+     * - ouverture (3)
+     */
     public static Resultat[] exercice1(File dossierDatasets) throws IOException, CImageNGException {
         int[][] image1 = chargerNG(dossierDatasets, "imageBruitee1.png");
         int[][] image2 = chargerNG(dossierDatasets, "imageBruitee2.png");
@@ -66,6 +76,21 @@ public class Applications {
         };
     }
 
+    /** * Exercice 2 : égalisation d'une image couleur.
+     *
+     * Méthode 1 :
+     * - séparation des canaux RGB
+     * - égalisation du canal rouge
+     * - égalisation du canal vert
+     * - égalisation du canal bleu
+     * - reconstruction de l'image RGB
+     *
+     * Méthode 2 :
+     * - calcul de la luminance
+     * - égalisation de la luminance
+     * - application de la même courbe aux trois canaux RGB
+     * - reconstruction de l'image RGB
+     */
     public static Resultat[] exercice2(File dossierDatasets) throws IOException, CImageRGBException {
         CImageRGB image = chargerRGB(dossierDatasets, "lenaAEgaliser.jpg");
         int largeur = image.getLargeur();
@@ -92,6 +117,21 @@ public class Applications {
         };
     }
 
+    /**
+     * Exercice 3 : séparation des pois bleus et rouges.
+     *
+     * Pois bleus :
+     * - extraction des canaux RGB
+     * - détection des pixels où le bleu est dominant
+     * - création d'un masque binaire
+     * - nettoyage binaire (5)   (fermeture)
+     *
+     * Pois rouges :
+     * - extraction des canaux RGB
+     * - détection des pixels où le rouge est dominant
+     * - création d'un masque binaire
+     * - nettoyage binaire (5) (fermeture)
+     */
     public static Resultat[] exercice3(File dossierDatasets) throws IOException, CImageRGBException, CImageNGException {
 
         CImageRGB image = chargerRGB(dossierDatasets, "petitsPois.png");
@@ -123,6 +163,23 @@ public class Applications {
         };
     }
 
+    /**
+     * Exercice 4 : séparation des grandes et petites balanes.
+     *
+     * Toutes les balanes :
+     * - seuillage automatique
+     * - fermeture (7)
+     * - ouverture (11)
+     *
+     * Grandes balanes :
+     * - ouverture (23)
+     * - application du masque sur l'image originale
+     *
+     * Petites balanes :
+     * - soustraction binaire : toutes les balanes - grandes balanes
+     * - ouverture (7)
+     * - application du masque sur l'image originale
+     */
     public static Resultat[] exercice4(File dossierDatasets) throws IOException, CImageNGException {
 
         int[][] image = chargerNG(dossierDatasets, "balanes.png");
@@ -137,15 +194,11 @@ public class Applications {
         // 3) Extraction des grandes balanes
         int[][] marqueurGrandes = MorphoElementaire.ouverture(balanes, 23);
 
-        /*
-         * 5) Les petites balanes sont ce qui reste quand on enlève les grandes.
-         */
+        // 4) Les petites balanes sont ce qui reste quand on enlève les grandes.
         int[][] petitesBalanesMasque = soustractionBinaire(balanes, marqueurGrandes);
         petitesBalanesMasque = MorphoElementaire.ouverture(petitesBalanesMasque, 7);
 
-        /*
-         * 7) Application des masques sur l'image originale pour avoir des images NG.
-         */
+        // 5) Application des masques sur l'image originale pour avoir des images NG.
         int[][] imageGrandes = appliquerMasque(image, marqueurGrandes);
         int[][] imagePetites = appliquerMasque(image, petitesBalanesMasque);
 
@@ -159,6 +212,14 @@ public class Applications {
         };
     }
 
+    /**
+     * Exercice 5 : extraction des outils.
+     *
+     * Image :
+     * - ouverture (29) pour estimer les nuages / le fond
+     * - soustraction : image originale - nuages
+     * - seuillage simple (45)
+     */
     public static Resultat[] exercice5(File dossierDatasets) throws IOException, CImageNGException {
 
         int[][] image = chargerNG(dossierDatasets, "tools.png");
@@ -180,6 +241,30 @@ public class Applications {
         };
     }
 
+    /**
+     * Exercice 6 : extraction du petit vaisseau et incrustation.
+     *
+     * Segmentation :
+     * - seuillage automatique
+     * - fermeture (7)
+     * - ouverture (47)
+     * - reconstruction géodésique
+     * - soustraction : image originale - gros vaisseau
+     * - ouverture (9)
+     * - seuillage simple (1)
+     * - fermeture (3)
+     *
+     * Synthèse :
+     * - application du masque du petit vaisseau sur l'image RGB
+     * - copie du petit vaisseau sur l'image planète
+     * - sauvegarde de synthese.png
+     *
+     * Synthèse avec contour :
+     * - gradient de dilatation sur le masque du petit vaisseau
+     * - seuillage simple (1)
+     * - coloration du contour en rouge
+     * - sauvegarde de synthese2.png
+     */
     public static Resultat[] exercice6(File dossierDatasets, File dossierSortie) throws IOException, CImageRGBException, CImageNGException {
 
         int[][] image = chargerNG(dossierDatasets, "vaisseaux.jpg");
@@ -273,6 +358,28 @@ public class Applications {
         };
     }
 
+    /**
+     * Exercice 7a : détection des contours des tartines avec gestion des reflets et des ombres.
+     *
+     * Traitement des reflets :
+     * - saturation linéaire (50, 200)
+     * - filtre médian (5)
+     * - seuillage simple (200)
+     * - dilatation (3)
+     *
+     * Traitement des ombres :
+     * - gamma (0.7)
+     * - égalisation d'histogramme
+     * - seuillage simple (128)
+     * - dilatation (3)
+     *
+     * Fusion et contours :
+     * - union des deux masques
+     * - filtre médian (3)
+     * - ouverture (67)
+     * - laplacien non linéaire
+     * - incrustation des contours en vert sur l'image RGB
+     */
     public static Resultat[] exercice7a(File dossierDatasets) throws IOException, CImageNGException, CImageRGBException {
 
         CImageRGB imageRGB = chargerRGB(dossierDatasets, "Tartines.jpg");
@@ -329,6 +436,18 @@ public class Applications {
         };
     }
 
+    /**
+     * Exercice 7b : détection simplifiée des contours des tartines.
+     *
+     * Image :
+     * - saturation linéaire (40, 200)
+     * - gamma (0.7)
+     * - égalisation d'histogramme
+     * - ouverture (67)
+     * - seuillage automatique
+     * - laplacien non linéaire
+     * - incrustation des contours en vert sur l'image RGB
+     */
     public static Resultat[] exercice7b(File dossierDatasets) throws IOException, CImageNGException, CImageRGBException {
 
         CImageRGB imageRGB = chargerRGB(dossierDatasets, "Tartines.jpg");

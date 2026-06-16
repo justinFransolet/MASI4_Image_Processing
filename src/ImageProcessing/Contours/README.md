@@ -1,5 +1,4 @@
-# Module : Extraction de Contours (Traitement d'Image)
-
+# Les contours
 Ce module regroupe deux classes Java (`ContoursLineaire.java` et `ContoursNonLineaire.java`) dédiées à la détection et au rehaussement des contours sur des images en niveaux de gris (`int[][]`). Il met en œuvre deux philosophies fondamentales : l'approche linéaire par masques de convolution spatiaux (Prewitt et Sobel) et l'approche non-linéaire basée sur la morphologie mathématique (gradients morphologiques et Laplacien non-linéaire).
 
 ---

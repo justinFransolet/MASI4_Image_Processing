@@ -1,27 +1,10 @@
 # Transformée de Fourier 2D
 
-Ce module regroupe les classes Java (`Fourier` et `MatriceComplexe` / `Complexe`) nécessaires au passage d'une image du **domaine spatial** (matrice de pixels) au **domaine fréquentiel** (spectre des fréquences spatiales). Il permet de réaliser de l'analyse spectrale et prépare les données pour le filtrage linéaire global (passe-bas, passe-haut, Butterworth).
+Ce module regroupe la classe Java (`Fourier.java`) nécessaire au passage d'une image du **domaine spatial** (matrice de pixels) au **domaine fréquentiel** (spectre des fréquences spatiales). Il permet de réaliser de l'analyse spectrale et prépare les données pour le filtrage linéaire global (passe-bas, passe-haut, Butterworth).
 
 ---
 
-## 1. Gestion des Nombres Complexes (`Complexe` & `MatriceComplexe`)
-
-La transformée de Fourier convertit des intensités réelles en coefficients complexes. Ce sous-ensemble fournit la structure mathématique pour les manipuler.
-
-### A. Classe `Complexe`
-Représente un nombre complexe sous la forme $z = a + ib$.
-* **`getModule()` :** Calcule l'amplitude ou l'énergie de la fréquence : $|z| = \sqrt{a^2 + b^2}$.
-* **`getPhase()` :** Calcule l'argument géométrique (orientation) : $\theta = \operatorname{atan2}(b, a)$.
-* **Opérations :** Permet l'addition (`additionne`), la multiplication (`multiplie`) et le calcul du `conjugue`.
-
-### B. Classe `MatriceComplexe`
-Sert de conteneur bidimensionnel pour stocker les résultats de la transformée de Fourier pour chaque pixel.
-* Permet d'extraire des tableaux de `double[][]` distincts pour la **partie réelle**, la **partie imaginaire** ou le **module**.
-* Intègre des getters/setters sécurisés pour manipuler les données fréquentielles de dimensions $M \times N$.
-
----
-
-## 2. Analyse Fréquentielle (`Fourier`)
+## 1. Analyse Fréquentielle (`Fourier.java`)
 
 La classe `Fourier` implémente l'algorithme de passage et de réorganisation du spectre fréquentiel.
 
@@ -43,7 +26,7 @@ La classe `Fourier` implémente l'algorithme de passage et de réorganisation du
 
 ---
 
-## 3. Architecture et Algorithme interne
+## 2. Architecture et Algorithme interne
 
 L'implémentation de la transformée de Fourier 2D s'appuie sur une séparation des dimensions :
 1. **Transformation en lignes ($n \rightarrow v$) :** Le signal subit d'abord une projection horizontale calculée avec les fonctions trigonométriques `Math.cos` et `Math.sin` appliquées aux indices.

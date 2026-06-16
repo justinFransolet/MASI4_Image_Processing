@@ -61,8 +61,12 @@ static int[][] dilatationGeodesique(int[][] image, int[][] masqueGeodesique, int
 public static int[][] reconstructionGeodesique(int[][] image, int[][] masqueGeodesique);
 ```
 
+---
+
 ## 3. Gestion des Exceptions et Robustesse
 Les deux classes intègrent des mécanismes stricts de validation des données d'entrée avant tout traitement :
 1. **Validation de l'image** (`verifierImage`) : Lève une `IllegalArgumentException` si la matrice est **null**, vide ou si l'image n'est pas parfaitement rectangulaire (lignes de longueurs inégales).
 2. **Validation du masque** (`verifierTailleMasque`) : Lève une `IllegalArgumentException` si la taille du masque est inférieure ou égale à $0$, ou si elle est paire (un nombre impair est obligatoire pour garantir la présence d'un pixel central unique).
 3. **Cohérence Géodésique** (`verifierMemeTaille`) : Lève une `IllegalArgumentException` si le marqueur et le masque géodésique n'ont pas exactement les mêmes dimensions de matrice.
+
+---

@@ -1,5 +1,13 @@
 # Transformée de Fourier 2D
 
+Année académique : 2025-2026
+
+Dirigé par Jean-Marc Wagner
+
+Fait par Thibault Theunissen & Justin Fransolet
+
+---
+
 Ce module regroupe la classe Java (`Fourier.java`) nécessaire au passage d'une image du **domaine spatial** (matrice de pixels) au **domaine fréquentiel** (spectre des fréquences spatiales). Il permet de réaliser de l'analyse spectrale et prépare les données pour le filtrage linéaire global (passe-bas, passe-haut, Butterworth).
 
 ---

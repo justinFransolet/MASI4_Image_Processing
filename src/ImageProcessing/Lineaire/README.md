@@ -1,5 +1,13 @@
 # Filtrage Linéaire
 
+Année académique : 2025-2026
+
+Dirigé par Jean-Marc Wagner
+
+Fait par Thibault Theunissen & Justin Fransolet
+
+---
+
 Ce module regroupe deux classes Java (`FiltrageLineaireLocal.java` et `FiltrageLineaireGlobal.java`) dédiées à l'atténuation du bruit, au lissage ou au rehaussement de détails sur des images en niveaux de gris (`int[][]`). Il met en œuvre deux approches fondamentales : le filtrage par convolution (domaine spatial) et le filtrage fréquentiel (domaine de Fourier).
 
 ---

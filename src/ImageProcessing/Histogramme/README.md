@@ -1,5 +1,13 @@
 # Histogrammes
 
+Année académique : 2025-2026
+
+Dirigé par Jean-Marc Wagner
+
+Fait par Thibault Theunissen & Justin Fransolet
+
+---
+
 Ce module regroupe deux classes Java (`Histogramme.java` et `ImageTools.java`) dédiées au calcul statistique, à la correction de contraste et à l'application de courbes tonales sur des images en niveaux de gris. Les images y sont manipulées sous forme de matrices d'entiers bidimensionnelles (`int[][]`).
 
 ---

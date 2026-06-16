@@ -1,5 +1,13 @@
 # Mathématiques Complexes
 
+Année académique : 2025-2026
+
+Dirigé par Jean-Marc Wagner
+
+Fait par Thibault Theunissen & Justin Fransolet
+
+---
+
 Ce module regroupe deux classes Java (`Complexe.java` et `MatriceComplexe.java`) indispensables pour la manipulation des signaux et le passage dans le domaine fréquentiel (Transformée de Fourier 2D). Le traitement d'image recourt aux nombres complexes pour dissocier et stocker l'**amplitude** (énergie des textures) et la **phase** (orientation et contours) de chaque fréquence spatiale.
 
 ---

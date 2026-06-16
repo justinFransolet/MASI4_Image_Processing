@@ -1,4 +1,4 @@
-# Transformée de Fourier 2D & Mathématiques Complexes
+# Transformée de Fourier 2D
 
 Ce module regroupe les classes Java (`Fourier` et `MatriceComplexe` / `Complexe`) nécessaires au passage d'une image du **domaine spatial** (matrice de pixels) au **domaine fréquentiel** (spectre des fréquences spatiales). Il permet de réaliser de l'analyse spectrale et prépare les données pour le filtrage linéaire global (passe-bas, passe-haut, Butterworth).
 
